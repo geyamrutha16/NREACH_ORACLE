@@ -99,7 +99,8 @@ Ph: 000-000-0000
             }).save();
 
             // Add acknowledgement link
-            smsRecord.ackLink = `http://localhost:3000/ack/${smsRecord._id}`;
+            smsRecord.ackLink = `${process.env.FRONTEND_URL}/api/sms/ack/${smsRecord._id}`;
+
             await smsRecord.save();
 
             // Send SMS via Twilio
