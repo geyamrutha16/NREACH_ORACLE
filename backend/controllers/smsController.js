@@ -2,12 +2,15 @@ import Sms from "../models/Sms.js";
 import Upload from "../models/Upload.js";
 import twilio from "twilio";
 import xlsx from "xlsx";
+import dotenv from "dotenv";
+dotenv.config();
 
-const client = twilio(
-    "ACfcabebfbe352c486b188820fed5a5989",
-    "11f58d50bab593880fc5fa8a9e78274f"
-);
-const twilioPhone = "+19785414292";
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
+
+console.log("🔑 Account SID from:", process.env.TWILIO_ACCOUNT_SID);
+console.log("🔑 Auth Token:", process.env.TWILIO_AUTH_TOKEN);
+console.log("🔑 Twilio Phone:", process.env.TWILIO_PHONE_NUMBER);
 
 function formatPhoneNumber(num) {
     if (!num) return null;
@@ -114,10 +117,26 @@ Ph: 000-000-0000
 
                 sentRecords.push(smsRecord);
             } catch (err) {
+                console.error("❌ SMS sending failed:", err?.message || err);
+
                 smsRecord.status = "failed";
-                await smsRecord.save();
-                skippedRecords.push({ name: Name, phone: formattedPhone, reason: "SMS failed" });
+
+                try {
+                    await smsRecord.save();
+                    console.log(`📄 Saved failed SMS record for ${Name} (${formattedPhone})`);
+                } catch (saveErr) {
+                    console.error("💾 Error saving failed SMS record:", saveErr?.message || saveErr);
+                }
+
+                skippedRecords.push({
+                    name: Name,
+                    phone: formattedPhone,
+                    reason: `SMS failed - ${err?.message || "Unknown error"}`
+                });
+
+                console.log("⚠️ Skipped Records so far:", skippedRecords);
             }
+
         }
 
         res.json({
@@ -130,6 +149,10 @@ Ph: 000-000-0000
     } catch (err) {
         console.error("❌ sendBulkSms error:", err);
         res.status(500).json({ error: "Failed to process bulk SMS" });
+        console.error(`❌ Twilio error for ${formattedPhone}:`, err.message, err.code);
+        smsRecord.status = "failed";
+        await smsRecord.save();
+        skippedRecords.push({ name: Name, phone: formattedPhone, reason: err.message });
     }
 };
 
