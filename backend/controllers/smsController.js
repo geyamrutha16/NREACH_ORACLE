@@ -99,14 +99,14 @@ Ph: 000-000-0000
             }).save();
 
             // Add acknowledgement link
-            smsRecord.ackLink = `${process.env.FRONTEND_URL}/api/sms/ack/${smsRecord._id}`;
-
+            const ackLink = `${process.env.FRONTEND_URL}/ack/${smsRecord._id}`;
+            smsRecord.ackLink = ackLink;
             await smsRecord.save();
 
             // Send SMS via Twilio
             try {
                 const twilioMsg = await client.messages.create({
-                    body: `${message}\n\nPlease acknowledge: ${smsRecord.ackLink}`,
+                    body: `${message}\n\nPlease acknowledge: ${ackLink}`,
                     to: formattedPhone,
                     from: twilioPhone,
                 });
