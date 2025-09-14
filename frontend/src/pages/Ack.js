@@ -10,7 +10,7 @@ const Ack = () => {
     useEffect(() => {
         const fetchAck = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/sms/ack/${smsId}`);
+                const res = await axios.get(`https://multiple-sms-backend.onrender.com/api/sms/ack/${smsId}`);
                 setStatus(res.data.message);
                 if (res.data.phoneNumber) setPhoneNumber(res.data.phoneNumber);
 

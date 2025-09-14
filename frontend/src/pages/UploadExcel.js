@@ -24,7 +24,7 @@ const UploadExcel = ({ setRefresh }) => {
         try {
             setLoading(true);
             const res = await axios.post(
-                "http://localhost:5000/api/sms/send-bulk-sms",
+                "https://multiple-sms-backend.onrender.com/api/sms/send-bulk-sms",
                 formData
             );
             console.log("[DEBUG] Bulk SMS response:", res.data);
