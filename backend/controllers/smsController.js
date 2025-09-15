@@ -102,6 +102,8 @@ Ph: 000-000-0000
             const ackLink = `${process.env.FRONTEND_URL}/ack/${smsRecord._id}`;
             smsRecord.ackLink = ackLink;
             await smsRecord.save();
+            console.log("Frontend URL:", process.env.FRONTEND_URL);
+            console.log("Generated Ack Link:", ackLink);
 
             // Send SMS via Twilio
             try {
