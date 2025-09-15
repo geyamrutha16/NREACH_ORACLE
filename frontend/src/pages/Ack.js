@@ -82,7 +82,7 @@ const Ack = () => {
                 <img
                     src={header}
                     style={{
-                        width: "800px", height: "200px", marginBottom: "20px", borderRadius: "8px"
+                        width: "800px", height: "50px", marginBottom: "20px", borderRadius: "8px"
                     }}
                 />
                 <h1 style={{ fontSize: "1.8rem", fontWeight: "bold", color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A", marginBottom: "1.5rem", textAlign: "center" }}>
