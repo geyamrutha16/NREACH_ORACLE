@@ -184,6 +184,29 @@ export const acknowledgeSms = async (req, res) => {
     }
 };
 
+// Add this function to your smsController.js
+export const getSmsById = async (req, res) => {
+    try {
+        const smsId = req.params.smsId;
+        console.log("📥 Fetching SMS record for ID:", smsId);
+
+        const sms = await Sms.findById(smsId);
+        if (!sms) {
+            console.warn("⚠️ SMS record not found for ID:", smsId);
+            return res.status(404).json({ success: false, message: "SMS record not found." });
+        }
+
+        console.log("✅ SMS record found:", sms);
+        res.json({
+            success: true,
+            data: sms
+        });
+    } catch (err) {
+        console.error("❌ getSmsById error:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
 /*
 import Sms from "../models/Sms.js";
 import Upload from "../models/Upload.js";
