@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import watermarkLogo from "./logo.png";
 import header from "./necg logo.jpg";
 
 const Ack = () => {
@@ -63,22 +62,7 @@ const Ack = () => {
     return (
         <div style={{ minHeight: "100vh", padding: "20px", background: "linear-gradient(135deg, #6366F1, #3B82F6)" }}>
             <div style={{ maxWidth: "800px", margin: "0 auto", background: "#fff", padding: "2rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
-                <img
-                    src={watermarkLogo}
-                    alt="watermark"
-                    style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "40%",
-                        transform: "translate(-50%, -50%)",
-                        width: "200px",
-                        height: "200px",
-                        opacity: 0.1,
-                        filter: "blur(1px)",
-                        pointerEvents: "none",
-                        zIndex: 0,
-                    }}
-                />
+
                 <img
                     src={header}
                     style={{
