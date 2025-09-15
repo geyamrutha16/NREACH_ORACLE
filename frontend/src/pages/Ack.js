@@ -84,11 +84,14 @@ const Ack = () => {
                     {status}
                 </h1>
 
+                {/*
                 {phoneNumber && (
                     <p style={{ marginBottom: "1.5rem", color: "#6B7280", textAlign: "center" }}>
                         Acknowledgment for <strong>{phoneNumber}</strong>
                     </p>
                 )}
+
+                */}
 
                 {smsData && (
                     <div style={{ marginTop: "2rem", border: "1px solid #E5E7EB", borderRadius: "8px", padding: "1.5rem" }}>
@@ -108,6 +111,9 @@ const Ack = () => {
                             </div>
                             <div>
                                 <strong>Section:</strong> {smsData.section}
+                            </div>
+                            <div>
+                                <strong>Phone Number:</strong> {smsData.phoneNumber}%
                             </div>
                             <div>
                                 <strong>Attendance:</strong> {smsData.attendance}%
