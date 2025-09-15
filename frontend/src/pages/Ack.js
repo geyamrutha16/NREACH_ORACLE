@@ -79,7 +79,12 @@ const Ack = () => {
                         zIndex: 0,
                     }}
                 />
-                <img src={header} />
+                <img
+                    src={header}
+                    style={{
+                        width: "800px", height: "200px", marginBottom: "20px", borderRadius: "8px"
+                    }}
+                />
                 <h1 style={{ fontSize: "1.8rem", fontWeight: "bold", color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A", marginBottom: "1.5rem", textAlign: "center" }}>
                     {status}
                 </h1>
@@ -113,7 +118,8 @@ const Ack = () => {
                                 <strong>Section:</strong> {smsData.section}
                             </div>
                             <div>
-                                <strong>Phone Number:</strong> {smsData.phoneNumber}%
+                                <strong>Phone Number:</strong>
+                                {smsData.phoneNumber?.startsWith('+91') ? `+91 ${smsData.phoneNumber.slice(3)}` : smsData.phoneNumber}
                             </div>
                             <div>
                                 <strong>Attendance:</strong> {smsData.attendance}%
