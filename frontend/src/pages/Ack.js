@@ -69,7 +69,7 @@ const Ack = () => {
                     style={{
                         position: "absolute",
                         top: "50%",
-                        left: "50%",
+                        left: "40%",
                         transform: "translate(-50%, -50%)",
                         width: "200px",
                         height: "200px",
