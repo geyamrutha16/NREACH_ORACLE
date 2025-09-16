@@ -121,7 +121,7 @@ const Ack = () => {
                         fontWeight: "bold",
                         marginBottom: "1rem",
                         textAlign: "center",
-                        background: #f9f9f9;
+                        background: "#f9f9f9",
                     }}
                 >
                     <img
