@@ -122,6 +122,7 @@ const Ack = () => {
                         marginBottom: "1rem",
                         textAlign: "center",
                         background: "#f9f9f9",
+                        padding: "10px",
                     }}
                 >
                     <img

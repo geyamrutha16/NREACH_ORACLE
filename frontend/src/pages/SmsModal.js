@@ -150,20 +150,6 @@ const SmsModal = ({ sms, onClose }) => {
                         Download Ack
                     </button>
 
-                    <button
-                        onClick={onClose}
-                        style={{
-                            padding: "8px 16px",
-                            borderRadius: "8px",
-                            border: "none",
-                            backgroundColor: "#f44336",
-                            color: "#fff",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        Close
-                    </button>
                 </div>
             </div>
         </div>

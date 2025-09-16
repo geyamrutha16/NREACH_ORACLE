@@ -82,7 +82,7 @@ const UploadExcel = ({ setRefresh }) => {
 
         } catch (err) {
             console.error("[DEBUG] Error sending bulk SMS:", err);
-            showNotification("❌ Failed to send SMS. Please try again.", "error");
+            showNotification("Failed to send SMS. Please try again.", "error");
         } finally {
             setLoading(false);
         }
@@ -92,7 +92,7 @@ const UploadExcel = ({ setRefresh }) => {
         const baseStyle = {
             position: "fixed",
             top: "20px",
-            right: "20px",
+            left: "20px",
             padding: "16px 24px",
             borderRadius: "12px",
             color: "white",
