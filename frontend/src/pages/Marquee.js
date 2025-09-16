@@ -16,7 +16,7 @@ const Marquee = () => {
           .marquee-content {
             display: inline-block;
             padding-left: 100%;
-            animation: marquee 15s linear infinite;
+            animation: marquee 10s linear infinite;
           }
 
           @keyframes marquee {
@@ -32,9 +32,9 @@ const Marquee = () => {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
-            color: #222;
+            color: #0313beff;
           }
         `}
             </style>
@@ -50,6 +50,13 @@ const Marquee = () => {
                             />
                         </span>
                         NARAYANA ENGINEERING COLLEGE GUDUR
+                        <span>
+                            <img
+                                src={watermarkLogo}
+                                alt="logo"
+                                style={{ height: "40px", width: "40px" }}
+                            />
+                        </span>
                     </h1>
                 </div>
             </div>
