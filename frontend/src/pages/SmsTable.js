@@ -12,7 +12,7 @@ const SmsTable = ({ refresh }) => {
     const fetchSms = async () => {
         setLoading(true);
         try {
-            const res = await axios.get("http://localhost:3000/api/sms/results");
+            const res = await axios.get("https://multiple-sms-backend.onrender.com/api/sms/results");
             setSmsRecords(res.data || []); // fallback empty array
         } catch (err) {
             console.error("Error fetching SMS results:", err);
