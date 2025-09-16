@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Marquee from "./Marquee";
+import html2pdf from "html2pdf.js";
 
 const Ack = () => {
     const { smsId } = useParams();
@@ -9,6 +10,8 @@ const Ack = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [smsData, setSmsData] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const receiptRef = useRef();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,7 +38,6 @@ const Ack = () => {
                 // ✅ Trigger leaderboard refresh globally
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
                 window.dispatchEvent(event);
-
             } catch (err) {
                 console.error("Error in Ack component:", err);
                 setStatus("❌ Error processing acknowledgment.");
@@ -47,11 +49,45 @@ const Ack = () => {
         fetchData();
     }, [smsId]);
 
+    const handleDownloadPDF = () => {
+        const element = receiptRef.current;
+        const opt = {
+            margin: 0.5,
+            filename: `acknowledgment_${smsId}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        };
+        html2pdf().set(opt).from(element).save();
+    };
+
     if (loading) {
         return (
-            <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "linear-gradient(135deg, #6366F1, #3B82F6)" }}>
-                <div style={{ background: "#fff", padding: "2rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", textAlign: "center" }}>
-                    <h1 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#3B82F6" }}>
+            <div
+                style={{
+                    minHeight: "100vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    background: "linear-gradient(135deg, #6366F1, #3B82F6)",
+                }}
+            >
+                <div
+                    style={{
+                        background: "#fff",
+                        padding: "2rem",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                        textAlign: "center",
+                    }}
+                >
+                    <h1
+                        style={{
+                            fontSize: "1.5rem",
+                            fontWeight: "bold",
+                            color: "#3B82F6",
+                        }}
+                    >
                         ⏳ Loading...
                     </h1>
                 </div>
@@ -60,20 +96,67 @@ const Ack = () => {
     }
 
     return (
-        <div style={{ minHeight: "100vh", padding: "10px", background: "linear-gradient(135deg, #6366F1, #3B82F6)" }}>
-            <div style={{ maxWidth: "800px", margin: "0 auto", background: "#fff", padding: "1rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
+        <div
+            style={{
+                minHeight: "100vh",
+                padding: "10px",
+                background: "linear-gradient(135deg, #6366F1, #3B82F6)",
+            }}
+        >
+            <div
+                style={{
+                    maxWidth: "800px",
+                    margin: "0 auto",
+                    background: "#fff",
+                    padding: "1rem",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                }}
+                ref={receiptRef}
+            >
                 <Marquee />
-                <h1 style={{ fontSize: "1.2rem", fontWeight: "bold", color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A", marginBottom: "1.5rem", textAlign: "center" }}>
+                <h1
+                    style={{
+                        fontSize: "1.4rem",
+                        fontWeight: "bold",
+                        color:
+                            status.includes("Error") || status.includes("❌")
+                                ? "#DC2626"
+                                : "#16A34A",
+                        marginBottom: "1.5rem",
+                        textAlign: "center",
+                    }}
+                >
                     {status}
                 </h1>
 
                 {smsData && (
-                    <div style={{ marginTop: "1.5rem", border: "1px solid #E5E7EB", borderRadius: "8px", padding: "1rem" }}>
-                        <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1F2937", marginBottom: "1rem" }}>
+                    <div
+                        style={{
+                            marginTop: "1.5rem",
+                            border: "1px solid #E5E7EB",
+                            borderRadius: "8px",
+                            padding: "1.4rem",
+                        }}
+                    >
+                        <h2
+                            style={{
+                                fontSize: "1.5rem",
+                                fontWeight: "bold",
+                                color: "#1F2937",
+                                marginBottom: "1rem",
+                            }}
+                        >
                             📋 SMS Details
                         </h2>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                                gap: "1rem",
+                            }}
+                        >
                             <div>
                                 <strong>Name:</strong> {smsData.name}
                             </div>
@@ -87,68 +170,108 @@ const Ack = () => {
                                 <strong>Section:</strong> {smsData.section}
                             </div>
                             <div>
-                                <strong>Phone Number:</strong>
-                                {smsData.phoneNumber?.startsWith('+91') ? `+91 ${smsData.phoneNumber.slice(3)}` : smsData.phoneNumber}
+                                <strong>Phone Number:</strong>{" "}
+                                {smsData.phoneNumber?.startsWith("+91")
+                                    ? `+91 ${smsData.phoneNumber.slice(3)}`
+                                    : smsData.phoneNumber}
                             </div>
                             <div>
                                 <strong>Attendance:</strong> {smsData.attendance}%
                             </div>
                             <div>
                                 <strong>Status:</strong>
-                                <span style={{
-                                    color: smsData.status === "sent" ? "#16A34A" : "#DC2626",
-                                    fontWeight: "600",
-                                    marginLeft: "0.5rem"
-                                }}>
+                                <span
+                                    style={{
+                                        color:
+                                            smsData.status === "sent" ? "#16A34A" : "#DC2626",
+                                        fontWeight: "600",
+                                        marginLeft: "0.5rem",
+                                    }}
+                                >
                                     {smsData.status.toUpperCase()}
                                 </span>
                             </div>
                             <div>
-                                <strong>Acknowledged:</strong>
+                                <strong>Acknowledged:</strong>{" "}
                                 {smsData.seen ? " ✅ Yes" : " ❌ No"}
                             </div>
                             <div>
-                                <strong>Sent Date:</strong> {new Date(smsData.createdAt).toLocaleString()}
+                                <strong>Sent Date:</strong>{" "}
+                                {new Date(smsData.createdAt).toLocaleString()}
                             </div>
                         </div>
 
                         {smsData.fromDate && smsData.toDate && (
-                            <div style={{ marginTop: "1rem", padding: "1rem", background: "#F3F4F6", borderRadius: "6px" }}>
-                                <strong>Attendance Period:</strong> {smsData.fromDate} to {smsData.toDate}
+                            <div
+                                style={{
+                                    marginTop: "1rem",
+                                    padding: "1rem",
+                                    background: "#F3F4F6",
+                                    borderRadius: "6px",
+                                }}
+                            >
+                                <strong>Attendance Period:</strong> {smsData.fromDate} to{" "}
+                                {smsData.toDate}
                             </div>
                         )}
 
-                        <div style={{ marginTop: "1.5rem", padding: "1rem", background: "#F0F9FF", borderRadius: "6px" }}>
+                        <div
+                            style={{
+                                marginTop: "1.5rem",
+                                padding: "1rem",
+                                background: "#F0F9FF",
+                                borderRadius: "6px",
+                            }}
+                        >
                             <strong>Message Sent:</strong>
-                            <p style={{ marginTop: "0.5rem", color: "#374151", lineHeight: "1.5" }}>
+                            <p
+                                style={{
+                                    marginTop: "0.5rem",
+                                    color: "#374151",
+                                    lineHeight: "1.5",
+                                }}
+                            >
                                 {smsData.message}
                             </p>
                         </div>
                     </div>
                 )}
+            </div>
 
-                <div style={{ marginTop: "2rem", textAlign: "center" }}>
+            {/* Download PDF button */}
+            {smsData && (
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
                     <button
-                        onClick={() => window.location.href = "/"}
+                        onClick={handleDownloadPDF}
                         style={{
-                            padding: "10px 20px",
-                            borderRadius: "6px",
-                            border: "none",
                             background: "#3B82F6",
                             color: "#fff",
+                            padding: "0.75rem 1.5rem",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontSize: "1rem",
                             fontWeight: "600",
-                            cursor: "pointer"
+                            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                            transition: "background 0.3s",
                         }}
+                        onMouseOver={(e) =>
+                            (e.currentTarget.style.background = "#2563EB")
+                        }
+                        onMouseOut={(e) =>
+                            (e.currentTarget.style.background = "#3B82F6")
+                        }
                     >
-                        ← Return to Home
+                        📥 Download Acknowledgment Receipt
                     </button>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
 
 export default Ack;
+
 /*
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
