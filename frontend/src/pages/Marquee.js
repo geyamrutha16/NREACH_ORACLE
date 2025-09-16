@@ -16,7 +16,7 @@ const Marquee = () => {
           .marquee-content {
             display: inline-block;
             padding-left: 100%;
-            animation: marquee 10s linear infinite;
+            animation: marquee 15s linear infinite;
           }
 
           @keyframes marquee {

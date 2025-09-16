@@ -60,17 +60,17 @@ const Ack = () => {
     }
 
     return (
-        <div style={{ minHeight: "100vh", padding: "20px", background: "linear-gradient(135deg, #6366F1, #3B82F6)" }}>
-            <div style={{ maxWidth: "800px", margin: "0 auto", background: "#fff", padding: "2rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
+        <div style={{ minHeight: "100vh", padding: "10px", background: "linear-gradient(135deg, #6366F1, #3B82F6)" }}>
+            <div style={{ maxWidth: "800px", margin: "0 auto", background: "#fff", padding: "1rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
                 <Marquee />
-                <h1 style={{ fontSize: "1.8rem", fontWeight: "bold", color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A", marginBottom: "1.5rem", textAlign: "center" }}>
+                <h1 style={{ fontSize: "1.2rem", fontWeight: "bold", color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A", marginBottom: "1.5rem", textAlign: "center" }}>
                     {status}
                 </h1>
 
                 {smsData && (
-                    <div style={{ marginTop: "2rem", border: "1px solid #E5E7EB", borderRadius: "8px", padding: "1.5rem" }}>
+                    <div style={{ marginTop: "1.5rem", border: "1px solid #E5E7EB", borderRadius: "8px", padding: "1rem" }}>
                         <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1F2937", marginBottom: "1rem" }}>
-                            📋 SMS Record Details
+                            📋 SMS Details
                         </h2>
 
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
