@@ -50,10 +50,6 @@ const Ack = () => {
         const original = receiptRef.current;
         if (!original) return;
 
-        // try to get logo src from the marquee image on page (fallback to a public path)
-        const marqueeImgEl = original.querySelector(".screen-only img, img");
-        const logoSrc = marqueeImgEl ? marqueeImgEl.src : "/your-logo.png";
-
         // clone the receipt node (deep clone)
         const clone = original.cloneNode(true);
 
@@ -61,30 +57,38 @@ const Ack = () => {
         const screenOnlyInClone = clone.querySelector(".screen-only");
         if (screenOnlyInClone) {
             const staticHeader = document.createElement("div");
-            staticHeader.style.cssText =
-                "display:flex;justify-content:center;align-items:center;font-size:18px;font-weight:700;margin-bottom:12px;gap:10px;";
+            staticHeader.style.cssText = `
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            gap: 10px;
+            text-align: center;
+        `;
             const img = document.createElement("img");
-            img.src = logoSrc;
+            img.src = "./logo.png"; // use your actual logo path
             img.style.cssText = "height:40px;width:40px;object-fit:contain;";
             staticHeader.appendChild(img);
             staticHeader.appendChild(document.createTextNode("NARAYANA ENGINEERING COLLEGE GUDUR"));
             screenOnlyInClone.parentNode.replaceChild(staticHeader, screenOnlyInClone);
         }
 
-        // Remove the download button from clone so it doesn't show up inside the PDF
+        // Remove download button in clone
         const btnInClone = clone.querySelector(".download-btn");
         if (btnInClone) btnInClone.remove();
 
-        // Append clone off-screen so html2pdf/html2canvas can render it
+        // Append clone hidden in DOM for rendering
+        clone.style.visibility = "hidden";
         clone.style.position = "absolute";
-        clone.style.left = "-9999px";
         clone.style.top = "0";
-        // Ensure width is appropriate for A4 capture
-        clone.style.width = "794px"; // approximate px width for A4 at 96dpi (optional tweak)
+        clone.style.left = "0";
+        clone.style.width = "794px"; // ~A4 width at 96dpi
         document.body.appendChild(clone);
 
         const opt = {
-            margin: 12, // mm
+            margin: 12,
             filename: `acknowledgment_${smsId}.pdf`,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true, logging: false },
@@ -92,16 +96,17 @@ const Ack = () => {
         };
 
         try {
-            // html2pdf returns an object with save() that resolves when finished
-            await html2pdf().set(opt).from(clone).save();
+            // Give browser a moment to render clone
+            setTimeout(async () => {
+                await html2pdf().set(opt).from(clone).save();
+                document.body.removeChild(clone);
+            }, 100);
         } catch (err) {
             console.error("PDF generation error:", err);
-            // optionally show a toast/error to user
-        } finally {
-            // cleanup
             document.body.removeChild(clone);
         }
     };
+
 
     if (loading) {
         return (

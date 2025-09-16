@@ -1,6 +1,4 @@
-
 import React, { useRef } from "react";
-import watermarkLogo from "./logo.png"; // must be in public/src folder or imported correctly
 
 const AcknowledgementReceipt = ({ sms, onClose }) => {
     const receiptRef = useRef();
@@ -8,7 +6,7 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
     // Print/Download as PDF
     const handleDownload = () => {
         const printContent = receiptRef.current;
-        const logoSrc = watermarkLogo; // resolve imported path
+        const logoSrc = "/logo.png"; // served from public folder
 
         const printWindow = window.open("", "", "width=800,height=600");
         printWindow.document.write(`
@@ -43,12 +41,9 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            {/* Overlay */}
             <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
 
-            {/* Modal */}
             <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-xl p-6 z-10">
-                {/* Top-right Close Button */}
                 <button
                     onClick={onClose}
                     className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -60,22 +55,15 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                     📜 Acknowledgement Receipt
                 </h1>
 
-                {/* Receipt Content */}
-                <div
-                    ref={receiptRef}
-                    className="bg-white p-6 mt-4 rounded-lg border border-gray-200"
-                >
+                <div ref={receiptRef} className="bg-white p-6 mt-4 rounded-lg border border-gray-200">
                     <p className="text-lg text-gray-800 mb-4">
                         <strong>Roll No:</strong> {sms.rollNo || "N/A"} <br />
                         <strong>Attendance:</strong> {sms.attendance || "N/A"}% <br />
                         <strong>Mobile No:</strong> {sms.phoneNumber} <br />
-                        <strong>Date:</strong>{" "}
-                        {new Date(sms.createdAt).toLocaleDateString()} <br />
-                        <strong>Time:</strong>{" "}
-                        {new Date(sms.createdAt).toLocaleTimeString()}
+                        <strong>Date:</strong> {new Date(sms.createdAt).toLocaleDateString()} <br />
+                        <strong>Time:</strong> {new Date(sms.createdAt).toLocaleTimeString()}
                     </p>
 
-                    {/* Signatures */}
                     <div className="flex justify-between mt-10">
                         <div className="text-center">
                             <div className="border-t-2 border-gray-800 w-40 mx-auto"></div>
@@ -88,7 +76,6 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                     </div>
                 </div>
 
-                {/* Bottom Buttons */}
                 <div className="mt-6 flex justify-end">
                     <button
                         onClick={handleDownload}
@@ -103,6 +90,7 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
 };
 
 export default AcknowledgementReceipt;
+
 /*
 import React, { useRef } from "react";
 import watermarkLogo from "./logo.png";
