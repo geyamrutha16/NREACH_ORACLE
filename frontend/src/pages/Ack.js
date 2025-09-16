@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import watermarkLogo from "./logo.png";
-import header from "./necg logo.jpg";
+import Marquee from "./Marquee";
 
 const Ack = () => {
     const { smsId } = useParams();
@@ -63,34 +62,10 @@ const Ack = () => {
     return (
         <div style={{ minHeight: "100vh", padding: "20px", background: "linear-gradient(135deg, #6366F1, #3B82F6)" }}>
             <div style={{ maxWidth: "800px", margin: "0 auto", background: "#fff", padding: "2rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
-                <img
-                    src={watermarkLogo}
-                    alt="watermark"
-                    style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "40%",
-                        transform: "translate(-50%, -50%)",
-                        width: "200px",
-                        height: "200px",
-                        opacity: 0.1,
-                        filter: "blur(1px)",
-                        pointerEvents: "none",
-                        zIndex: 0,
-                    }}
-                />
+                <Marquee />
                 <h1 style={{ fontSize: "1.8rem", fontWeight: "bold", color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A", marginBottom: "1.5rem", textAlign: "center" }}>
                     {status}
                 </h1>
-
-                {/*
-                {phoneNumber && (
-                    <p style={{ marginBottom: "1.5rem", color: "#6B7280", textAlign: "center" }}>
-                        Acknowledgment for <strong>{phoneNumber}</strong>
-                    </p>
-                )}
-
-                */}
 
                 {smsData && (
                     <div style={{ marginTop: "2rem", border: "1px solid #E5E7EB", borderRadius: "8px", padding: "1.5rem" }}>

@@ -6,15 +6,14 @@ const SmsTable = ({ refresh }) => {
     const [smsRecords, setSmsRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filterYear, setFilterYear] = useState("");
+    const [filterSection, setFilterSection] = useState("");
     const [selectedSms, setSelectedSms] = useState(null);
 
     const fetchSms = async () => {
         setLoading(true);
         try {
-            //const res = await axios.get("https://multiple-sms-backend.onrender.com/api/sms/results");
             const res = await axios.get("http://localhost:3000/api/sms/results");
-
-            setSmsRecords(res.data);
+            setSmsRecords(res.data || []); // fallback empty array
         } catch (err) {
             console.error("Error fetching SMS results:", err);
         } finally {
@@ -26,66 +25,78 @@ const SmsTable = ({ refresh }) => {
         fetchSms();
     }, [refresh]);
 
-    const filteredRecords = smsRecords.filter((sms) =>
-        filterYear ? sms.year === filterYear : true
-    );
+    const filteredRecords = smsRecords.filter((sms) => {
+        const yearMatch = filterYear ? sms.year === filterYear : true;
+        const sectionMatch = filterSection ? sms.section === filterSection : true;
+        return yearMatch && sectionMatch;
+    });
 
     return (
-        <div style={{ marginTop: "20px" }}>
+        <div style={{ marginTop: "10px" }}>
             <h2 style={{ marginBottom: "1rem" }}>📊 SMS Records</h2>
 
-            {/* Year Filter */}
-            <div style={{ marginBottom: "15px" }}>
-                {["I", "II", "III", "IV"].map((yr) => (
-                    <button
-                        key={yr}
-                        onClick={() => setFilterYear(yr)}
+            {/* Dropdown Filters */}
+            <div
+                style={{
+                    display: "flex",
+                    gap: "20px",
+                    marginBottom: "20px",
+                    alignItems: "center",
+                }}
+            >
+                <label>
+                    Year:{" "}
+                    <select
+                        value={filterYear}
+                        onChange={(e) => setFilterYear(e.target.value)}
                         style={{
-                            marginRight: "10px",
-                            padding: "8px 16px",
+                            padding: "8px 12px",
                             borderRadius: "6px",
-                            border: "none",
-                            background: filterYear === yr ? "#2563EB" : "#3B82F6",
-                            color: "#fff",
-                            fontWeight: "600",
-                            cursor: "pointer",
+                            border: "1px solid #ccc",
                         }}
                     >
-                        {yr}
-                    </button>
-                ))}
+                        <option value="">All Years</option>
+                        <option value="I">I</option>
+                        <option value="II">II</option>
+                        <option value="III">III</option>
+                        <option value="IV">IV</option>
+                    </select>
+                </label>
+
+                <label>
+                    Section:{" "}
+                    <select
+                        value={filterSection}
+                        onChange={(e) => setFilterSection(e.target.value)}
+                        style={{
+                            padding: "8px 12px",
+                            borderRadius: "6px",
+                            border: "1px solid #ccc",
+                        }}
+                    >
+                        <option value="">All Sections</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </label>
+
                 <button
-                    onClick={() => setFilterYear("")}
+                    onClick={fetchSms}
                     style={{
                         padding: "8px 16px",
                         borderRadius: "6px",
                         border: "none",
-                        background: "#6B7280",
+                        background: "#10B981",
                         color: "#fff",
                         fontWeight: "600",
                         cursor: "pointer",
                     }}
                 >
-                    All
+                    🔄 Refresh
                 </button>
             </div>
-
-            {/* Refresh */}
-            <button
-                onClick={fetchSms}
-                style={{
-                    padding: "8px 16px",
-                    marginBottom: "15px",
-                    borderRadius: "6px",
-                    border: "none",
-                    background: "#10B981",
-                    color: "#fff",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                }}
-            >
-                🔄 Refresh Table
-            </button>
 
             {loading ? (
                 <p>Loading...</p>
@@ -119,7 +130,7 @@ const SmsTable = ({ refresh }) => {
                         <tbody>
                             {filteredRecords.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" style={{ textAlign: "center", padding: "1rem" }}>
+                                    <td colSpan="7" style={{ textAlign: "center", padding: "1rem" }}>
                                         No records found
                                     </td>
                                 </tr>
@@ -131,7 +142,9 @@ const SmsTable = ({ refresh }) => {
                                             background: i % 2 === 0 ? "#F9FAFB" : "#FFFFFF",
                                             cursor: "pointer",
                                         }}
-                                        onClick={() => setSelectedSms(sms)}
+                                        onClick={() => {
+                                            if (sms) setSelectedSms(sms); // only set if defined
+                                        }}
                                     >
                                         <td style={{ padding: "12px" }}>{sms.name}</td>
                                         <td style={{ padding: "12px" }}>{sms.phoneNumber}</td>
@@ -144,10 +157,12 @@ const SmsTable = ({ refresh }) => {
                                                 fontWeight: "600",
                                             }}
                                         >
-                                            {sms.status.toUpperCase()}
+                                            {sms.status?.toUpperCase?.()}
                                         </td>
                                         <td style={{ padding: "12px" }}>
-                                            {new Date(sms.createdAt).toLocaleString()}
+                                            {sms.createdAt
+                                                ? new Date(sms.createdAt).toLocaleString()
+                                                : "N/A"}
                                         </td>
                                         <td style={{ padding: "12px" }}>{sms.seen ? "✅" : "❌"}</td>
                                     </tr>
@@ -167,6 +182,7 @@ const SmsTable = ({ refresh }) => {
 };
 
 export default SmsTable;
+
 
 /*
 import React, { useEffect, useState } from "react";

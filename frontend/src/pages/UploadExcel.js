@@ -175,11 +175,11 @@ const UploadExcel = ({ setRefresh }) => {
                     padding: "30px",
                     borderRadius: "12px",
                     maxWidth: "600px",
-                    margin: "30px auto",
+                    margin: "10px auto",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
             >
-                <h2 style={{ marginBottom: "20px", fontWeight: "700" }}>📤 Send Bulk SMS</h2>
+                <h2 style={{ marginBottom: "15px", fontWeight: "700" }}>📤 Send Bulk SMS</h2>
 
                 <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
                     {/* Upload Excel */}
