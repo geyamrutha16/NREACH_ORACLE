@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import watermarkLogo from "./logo.png";
 
 const AcknowledgementReceipt = ({ sms, onClose }) => {
     const receiptRef = useRef();
@@ -6,19 +7,18 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
     // Print/Download as PDF
     const handleDownload = () => {
         const printContent = receiptRef.current;
-        const logoSrc = "/logo.png"; // served from public folder
-
         const printWindow = window.open("", "", "width=800,height=600");
+
         printWindow.document.write(`
       <html>
         <head>
           <title>Acknowledgement Receipt</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; color: #1e3a8a; }
-            p { font-size: 16px; margin: 5px 0; }
-            .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
-            .header img { height: 50px; width: 50px; vertical-align: middle; margin-right: 10px; }
+            body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+            h1 { text-align: center; color: #1e3a8a; margin-top: 10px; }
+            p { font-size: 16px; margin: 5px 0; text-align: left; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .header img { width: 80px; height: auto; display: block; margin: 0 auto; }
             .signature-section {
               display: flex; justify-content: space-between; margin-top: 50px;
             }
@@ -28,13 +28,15 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
         </head>
         <body>
           <div class="header">
-            <img src="${logoSrc}" alt="Logo"/> 
-            NARAYANA ENGINEERING COLLEGE GUDUR
+            <img src="${watermarkLogo}" alt="Logo" />
+            <h1>Acknowledgement Receipt</h1>
+            <hr />
           </div>
           ${printContent.innerHTML}
         </body>
       </html>
     `);
+
         printWindow.document.close();
         printWindow.print();
     };
@@ -55,13 +57,18 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                     📜 Acknowledgement Receipt
                 </h1>
 
-                <div ref={receiptRef} className="bg-white p-6 mt-4 rounded-lg border border-gray-200">
+                <div
+                    ref={receiptRef}
+                    className="bg-white p-6 mt-4 rounded-lg border border-gray-200"
+                >
                     <p className="text-lg text-gray-800 mb-4">
                         <strong>Roll No:</strong> {sms.rollNo || "N/A"} <br />
                         <strong>Attendance:</strong> {sms.attendance || "N/A"}% <br />
                         <strong>Mobile No:</strong> {sms.phoneNumber} <br />
-                        <strong>Date:</strong> {new Date(sms.createdAt).toLocaleDateString()} <br />
-                        <strong>Time:</strong> {new Date(sms.createdAt).toLocaleTimeString()}
+                        <strong>Date:</strong>{" "}
+                        {new Date(sms.createdAt).toLocaleDateString()} <br />
+                        <strong>Time:</strong>{" "}
+                        {new Date(sms.createdAt).toLocaleTimeString()}
                     </p>
 
                     <div className="flex justify-between mt-10">
@@ -130,15 +137,15 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            
+
             <div
                 className="absolute inset-0 bg-black/50"
                 onClick={onClose}
             ></div>
 
-           
+
             <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-xl p-6 z-10">
-                
+
                 <button
                     onClick={onClose}
                     className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -150,7 +157,7 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                     📜 Acknowledgement Receipt
                 </h1>
 
-               
+
                 <div
                     ref={receiptRef}
                     className="bg-white p-6 mt-4 rounded-lg border border-gray-200"
@@ -165,7 +172,7 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                         {new Date(sms.createdAt).toLocaleTimeString()}
                     </p>
 
-                    
+
                     <div className="flex justify-between mt-10">
                         <div className="text-center">
                             <div className="border-t-2 border-gray-800 w-40 mx-auto"></div>
@@ -178,7 +185,7 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                     </div>
                 </div>
 
-               
+
                 <div className="mt-6 flex justify-end">
                     <button
                         onClick={handleDownload}

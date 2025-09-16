@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import Marquee from "./Marquee";
 import html2pdf from "html2pdf.js";
+import watermarkLogo from "./logo.png";
 
 const Ack = () => {
     const { smsId } = useParams();
@@ -17,13 +17,13 @@ const Ack = () => {
             try {
                 setLoading(true);
 
-                // Acknowledge
+                // 1. Acknowledge the SMS
                 const ackRes = await axios.get(
                     `https://multiple-sms-backend.onrender.com/api/sms/ack/${smsId}`
                 );
                 setStatus(ackRes.data.message);
 
-                // Fetch record
+                // 2. Fetch SMS record details
                 const recordRes = await axios.get(
                     `https://multiple-sms-backend.onrender.com/api/sms/record/${smsId}`
                 );
@@ -32,7 +32,7 @@ const Ack = () => {
                     setSmsData(recordRes.data.data);
                 }
 
-                // Trigger global event
+                // Trigger leaderboard refresh globally
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
                 window.dispatchEvent(event);
             } catch (err) {
@@ -46,67 +46,17 @@ const Ack = () => {
         fetchData();
     }, [smsId]);
 
-    const handleDownloadPDF = async () => {
-        const original = receiptRef.current;
-        if (!original) return;
-
-        // clone the receipt node (deep clone)
-        const clone = original.cloneNode(true);
-
-        // Replace the animated marquee in clone with a static, centered header
-        const screenOnlyInClone = clone.querySelector(".screen-only");
-        if (screenOnlyInClone) {
-            const staticHeader = document.createElement("div");
-            staticHeader.style.cssText = `
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            gap: 10px;
-            text-align: center;
-        `;
-            const img = document.createElement("img");
-            img.src = "./logo.png"; // use your actual logo path
-            img.style.cssText = "height:40px;width:40px;object-fit:contain;";
-            staticHeader.appendChild(img);
-            staticHeader.appendChild(document.createTextNode("NARAYANA ENGINEERING COLLEGE GUDUR"));
-            screenOnlyInClone.parentNode.replaceChild(staticHeader, screenOnlyInClone);
-        }
-
-        // Remove download button in clone
-        const btnInClone = clone.querySelector(".download-btn");
-        if (btnInClone) btnInClone.remove();
-
-        // Append clone hidden in DOM for rendering
-        clone.style.visibility = "hidden";
-        clone.style.position = "absolute";
-        clone.style.top = "0";
-        clone.style.left = "0";
-        clone.style.width = "794px"; // ~A4 width at 96dpi
-        document.body.appendChild(clone);
-
+    const handleDownloadPDF = () => {
+        const element = receiptRef.current;
         const opt = {
-            margin: 12,
+            margin: 0.5,
             filename: `acknowledgment_${smsId}.pdf`,
             image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         };
-
-        try {
-            // Give browser a moment to render clone
-            setTimeout(async () => {
-                await html2pdf().set(opt).from(clone).save();
-                document.body.removeChild(clone);
-            }, 100);
-        } catch (err) {
-            console.error("PDF generation error:", err);
-            document.body.removeChild(clone);
-        }
+        html2pdf().set(opt).from(element).save();
     };
-
 
     if (loading) {
         return (
@@ -150,16 +100,6 @@ const Ack = () => {
                 background: "linear-gradient(135deg, #6366F1, #3B82F6)",
             }}
         >
-            <style>
-                {`
-          /* keep marquee visible on screen */
-          @media screen {
-            .pdf-only { display: none; }
-          }
-          /* not relying on @media print for the PDF header - we use DOM clone replacement */
-        `}
-            </style>
-
             <div
                 style={{
                     maxWidth: "800px",
@@ -171,22 +111,34 @@ const Ack = () => {
                 }}
                 ref={receiptRef}
             >
-                {/* Marquee visible on page only */}
-                <div className="screen-only">
-                    <Marquee />
-                </div>
-
-                {/* This element can be used as a fallback for printed view if desired */}
-                <div className="pdf-only" style={{ textAlign: "center" }}>
-                    <img src="/your-logo.png" alt="Logo" style={{ height: 40, width: 40 }} />
-                    <div>NARAYANA ENGINEERING COLLEGE GUDUR</div>
+                {/* ✅ College Header (visible in webpage + PDF) */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "1.6rem",
+                        fontWeight: "bold",
+                        marginBottom: "1rem",
+                        textAlign: "center",
+                    }}
+                >
+                    <img
+                        src={watermarkLogo}
+                        alt="Logo"
+                        style={{ height: "40px", width: "40px", marginRight: "10px" }}
+                    />
+                    NARAYANA ENGINEERING COLLEGE GUDUR
                 </div>
 
                 <h1
                     style={{
                         fontSize: "1.4rem",
                         fontWeight: "bold",
-                        color: status.includes("Error") || status.includes("❌") ? "#DC2626" : "#16A34A",
+                        color:
+                            status.includes("Error") || status.includes("❌")
+                                ? "#DC2626"
+                                : "#16A34A",
                         marginBottom: "1.5rem",
                         textAlign: "center",
                     }}
@@ -235,43 +187,74 @@ const Ack = () => {
                             </div>
                             <div>
                                 <strong>Phone Number:</strong>{" "}
-                                {smsData.phoneNumber?.startsWith("+91") ? `+91 ${smsData.phoneNumber.slice(3)}` : smsData.phoneNumber}
+                                {smsData.phoneNumber?.startsWith("+91")
+                                    ? `+91 ${smsData.phoneNumber.slice(3)}`
+                                    : smsData.phoneNumber}
                             </div>
                             <div>
                                 <strong>Attendance:</strong> {smsData.attendance}%
                             </div>
                             <div>
                                 <strong>Status:</strong>
-                                <span style={{ color: smsData.status === "sent" ? "#16A34A" : "#DC2626", fontWeight: "600", marginLeft: "0.5rem" }}>
+                                <span
+                                    style={{
+                                        color: smsData.status === "sent" ? "#16A34A" : "#DC2626",
+                                        fontWeight: "600",
+                                        marginLeft: "0.5rem",
+                                    }}
+                                >
                                     {smsData.status.toUpperCase()}
                                 </span>
                             </div>
                             <div>
-                                <strong>Acknowledged:</strong> {smsData.seen ? " ✅ Yes" : " ❌ No"}
+                                <strong>Acknowledged:</strong>{" "}
+                                {smsData.seen ? " ✅ Yes" : " ❌ No"}
                             </div>
                             <div>
-                                <strong>Sent Date:</strong> {new Date(smsData.createdAt).toLocaleString()}
+                                <strong>Sent Date:</strong>{" "}
+                                {new Date(smsData.createdAt).toLocaleString()}
                             </div>
                         </div>
 
                         {smsData.fromDate && smsData.toDate && (
-                            <div style={{ marginTop: "1rem", padding: "1rem", background: "#F3F4F6", borderRadius: "6px" }}>
-                                <strong>Attendance Period:</strong> {smsData.fromDate} to {smsData.toDate}
+                            <div
+                                style={{
+                                    marginTop: "1rem",
+                                    padding: "1rem",
+                                    background: "#F3F4F6",
+                                    borderRadius: "6px",
+                                }}
+                            >
+                                <strong>Attendance Period:</strong> {smsData.fromDate} to{" "}
+                                {smsData.toDate}
                             </div>
                         )}
 
-                        <div style={{ marginTop: "1.5rem", padding: "1rem", background: "#F0F9FF", borderRadius: "6px" }}>
+                        <div
+                            style={{
+                                marginTop: "1.5rem",
+                                padding: "1rem",
+                                background: "#F0F9FF",
+                                borderRadius: "6px",
+                            }}
+                        >
                             <strong>Message Sent:</strong>
-                            <p style={{ marginTop: "0.5rem", color: "#374151", lineHeight: "1.5" }}>{smsData.message}</p>
+                            <p
+                                style={{
+                                    marginTop: "0.5rem",
+                                    color: "#374151",
+                                    lineHeight: "1.5",
+                                }}
+                            >
+                                {smsData.message}
+                            </p>
                         </div>
                     </div>
                 )}
 
-                {/* Download button: visible only on webpage; note className used so clone can remove it */}
                 {smsData && (
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
                         <button
-                            className="download-btn"
                             onClick={handleDownloadPDF}
                             style={{
                                 background: "#3B82F6",
@@ -285,8 +268,12 @@ const Ack = () => {
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
                                 transition: "background 0.3s",
                             }}
-                            onMouseOver={(e) => (e.currentTarget.style.background = "#2563EB")}
-                            onMouseOut={(e) => (e.currentTarget.style.background = "#3B82F6")}
+                            onMouseOver={(e) =>
+                                (e.currentTarget.style.background = "#2563EB")
+                            }
+                            onMouseOut={(e) =>
+                                (e.currentTarget.style.background = "#3B82F6")
+                            }
                         >
                             📥 Download Acknowledgment Receipt
                         </button>
@@ -298,7 +285,6 @@ const Ack = () => {
 };
 
 export default Ack;
-
 /*
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
@@ -603,7 +589,6 @@ const Ack = () => {
 
 export default Ack;
 */
-
 /*
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
