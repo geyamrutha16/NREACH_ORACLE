@@ -7,7 +7,6 @@ import html2pdf from "html2pdf.js";
 const Ack = () => {
     const { smsId } = useParams();
     const [status, setStatus] = useState("Processing acknowledgment...");
-    const [phoneNumber, setPhoneNumber] = useState("");
     const [smsData, setSmsData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -18,24 +17,22 @@ const Ack = () => {
             try {
                 setLoading(true);
 
-                // 1. First acknowledge the SMS
+                // 1. Acknowledge the SMS
                 const ackRes = await axios.get(
                     `https://multiple-sms-backend.onrender.com/api/sms/ack/${smsId}`
                 );
                 setStatus(ackRes.data.message);
-                if (ackRes.data.phoneNumber) setPhoneNumber(ackRes.data.phoneNumber);
 
-                // 2. Then fetch the full SMS record details
+                // 2. Fetch SMS record details
                 const recordRes = await axios.get(
                     `https://multiple-sms-backend.onrender.com/api/sms/record/${smsId}`
                 );
 
                 if (recordRes.data.success) {
-                    console.log("Fetched SMS Record:", recordRes.data.data);
                     setSmsData(recordRes.data.data);
                 }
 
-                // ✅ Trigger leaderboard refresh globally
+                // Trigger leaderboard refresh globally
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
                 window.dispatchEvent(event);
             } catch (err) {
@@ -103,6 +100,31 @@ const Ack = () => {
                 background: "linear-gradient(135deg, #6366F1, #3B82F6)",
             }}
         >
+            <style>
+                {`
+          @media screen {
+            .pdf-only { display: none; }
+          }
+          @media print {
+            .screen-only { display: none; }
+            .pdf-only {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-size: 1.6rem;
+              font-weight: bold;
+              margin-bottom: 1rem;
+              text-align: center;
+            }
+            .pdf-only img {
+              height: 40px;
+              width: 40px;
+              margin-right: 10px;
+            }
+          }
+        `}
+            </style>
+
             <div
                 style={{
                     maxWidth: "800px",
@@ -114,7 +136,17 @@ const Ack = () => {
                 }}
                 ref={receiptRef}
             >
-                <Marquee />
+                {/* Marquee only visible on screen */}
+                <div className="screen-only">
+                    <Marquee />
+                </div>
+
+                {/* Static logo + title only for PDF */}
+                <div className="pdf-only">
+                    <img src="/your-logo.png" alt="Logo" />
+                    NARAYANA ENGINEERING COLLEGE GUDUR
+                </div>
+
                 <h1
                     style={{
                         fontSize: "1.4rem",
@@ -182,8 +214,7 @@ const Ack = () => {
                                 <strong>Status:</strong>
                                 <span
                                     style={{
-                                        color:
-                                            smsData.status === "sent" ? "#16A34A" : "#DC2626",
+                                        color: smsData.status === "sent" ? "#16A34A" : "#DC2626",
                                         fontWeight: "600",
                                         marginLeft: "0.5rem",
                                     }}
@@ -236,41 +267,42 @@ const Ack = () => {
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* Download PDF button */}
-            {smsData && (
-                <div style={{ textAlign: "center", marginTop: "20px" }}>
-                    <button
-                        onClick={handleDownloadPDF}
-                        style={{
-                            background: "#3B82F6",
-                            color: "#fff",
-                            padding: "0.75rem 1.5rem",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            fontSize: "1rem",
-                            fontWeight: "600",
-                            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                            transition: "background 0.3s",
-                        }}
-                        onMouseOver={(e) =>
-                            (e.currentTarget.style.background = "#2563EB")
-                        }
-                        onMouseOut={(e) =>
-                            (e.currentTarget.style.background = "#3B82F6")
-                        }
-                    >
-                        📥 Download Acknowledgment Receipt
-                    </button>
-                </div>
-            )}
+                {/* Download PDF button */}
+                {smsData && (
+                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                        <button
+                            onClick={handleDownloadPDF}
+                            style={{
+                                background: "#3B82F6",
+                                color: "#fff",
+                                padding: "0.75rem 1.5rem",
+                                border: "none",
+                                borderRadius: "8px",
+                                cursor: "pointer",
+                                fontSize: "1rem",
+                                fontWeight: "600",
+                                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                                transition: "background 0.3s",
+                            }}
+                            onMouseOver={(e) =>
+                                (e.currentTarget.style.background = "#2563EB")
+                            }
+                            onMouseOut={(e) =>
+                                (e.currentTarget.style.background = "#3B82F6")
+                            }
+                        >
+                            📥 Download Acknowledgment Receipt
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
 
 export default Ack;
+
 
 /*
 import { useParams } from "react-router-dom";
