@@ -150,7 +150,7 @@ const Home = () => {
 
             {/* Main Content */}
             <div style={{
-                width: "70%",
+                textAlign: "center",
                 padding: "20px",
                 margin: "20px auto"
             }}>
@@ -162,85 +162,87 @@ const Home = () => {
                         borderRadius: "20px",
                         backdropFilter: "blur(10px)",
                         boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                        animation: "fadeIn 1s ease-in-out",
-                        display: "flex",
-                        flexDirection: isMobile ? "column" : "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: isMobile ? "20px" : "40px"
                     }}>
-                        {/* Logo/Image Section - Left Aligned */}
-                        <div style={{
-                            display: "flex",
-                            justifyContent: isMobile ? "center" : "flex-start",
-                            flex: isMobile ? "0 1 auto" : "0 0 auto"
-                        }}>
-                            <div style={{
-                                width: isMobile ? "120px" : "180px",
-                                height: isMobile ? "120px" : "180px",
+                        <div
+                            style={{
                                 display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                overflow: "hidden"
+                                justifyContent: isMobile ? "center" : "flex-start",
+                            }}
+                        >
+                            {/* Logo/Image Section - Left Aligned */}
+                            <div style={{
+                                display: "flex",
+                                justifyContent: isMobile ? "center" : "flex-start",
+                                flex: isMobile ? "0 1 auto" : "0 0 auto",
+                                margin: "40px",
                             }}>
-                                <img
-                                    src={icon}
-                                    alt="SMS Campaign Manager"
-                                    style={{
-                                        width: isMobile ? "60px" : "200px",
-                                        height: isMobile ? "60px" : "200px"
-                                    }}
-                                />
+                                <div style={{
+                                    width: isMobile ? "120px" : "180px",
+                                    height: isMobile ? "120px" : "180px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    overflow: "hidden"
+                                }}>
+                                    <img
+                                        src={icon}
+                                        alt="SMS Campaign Manager"
+                                        style={{
+                                            width: isMobile ? "60px" : "200px",
+                                            height: isMobile ? "60px" : "200px"
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Text Content - Right Aligned */}
-                        <div style={{
-                            textAlign: isMobile ? "center" : "left",
-                            flex: "1"
-                        }}>
-                            {/* Heading */}
-                            <h1 style={{
-                                fontSize: isMobile ? "2rem" : "2.8rem",
-                                marginBottom: "15px",
-                                fontWeight: "bold",
-                                background: "linear-gradient(45deg, #fff, #e0e7ff)",
-                                backgroundClip: "text",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent"
+                            {/* Text Content - Right Aligned */}
+                            <div style={{
+                                textAlign: isMobile ? "center" : "left",
+                                flex: "1"
                             }}>
-                                SMS PORTAL
-                            </h1>
+                                {/* Heading */}
+                                <h1 style={{
+                                    fontSize: isMobile ? "2rem" : "2.8rem",
+                                    marginBottom: "15px",
+                                    fontWeight: "bold",
+                                    background: "linear-gradient(45deg, #fff, #e0e7ff)",
+                                    backgroundClip: "text",
+                                    WebkitBackgroundClip: "text",
+                                    WebkitTextFillColor: "transparent"
+                                }}>
+                                    SMS PORTAL
+                                </h1>
 
-                            {/* Paragraph */}
-                            <p style={{
-                                fontSize: isMobile ? "1rem" : "1.2rem",
-                                opacity: 0.9,
-                                lineHeight: "1.6",
-                                marginBottom: "25px"
-                            }}>
-                                Effortlessly manage and send attendance reports to arents.
-                                Upload the list, and track sms status at one place.
-                            </p>
+                                {/* Paragraph */}
+                                <p style={{
+                                    fontSize: isMobile ? "1rem" : "1.2rem",
+                                    opacity: 0.9,
+                                    lineHeight: "1.6",
+                                    marginBottom: "25px"
+                                }}>
+                                    Effortlessly manage and send attendance reports to arents.
+                                    Upload the list, and track sms status at one place.
+                                </p>
 
-                            {/* Call to Action Button */}
-                            <button
-                                onClick={() => setActiveTab("upload")}
-                                style={{
-                                    padding: "12px 25px",
-                                    borderRadius: "8px",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    background: "linear-gradient(45deg, #10B981, #059669)",
-                                    color: "#fff",
-                                    fontWeight: "600",
-                                    fontSize: isMobile ? "1rem" : "1.1rem",
-                                    transition: "all 0.3s ease",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
-                                }}
-                            >
-                                Get Started Now
-                            </button>
+                                {/* Call to Action Button */}
+                                <button
+                                    onClick={() => setActiveTab("upload")}
+                                    style={{
+                                        padding: "12px 25px",
+                                        borderRadius: "8px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        background: "linear-gradient(45deg, #10B981, #059669)",
+                                        color: "#fff",
+                                        fontWeight: "600",
+                                        fontSize: isMobile ? "1rem" : "1.1rem",
+                                        transition: "all 0.3s ease",
+                                        boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+                                    }}
+                                >
+                                    Get Started Now
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -264,21 +266,23 @@ const Home = () => {
             </div>
 
             {/* Overlay when menu is open */}
-            {isMobile && isMobileMenuOpen && (
-                <div
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: "rgba(0,0,0,0.5)",
-                        zIndex: 999,
-                        cursor: "pointer"
-                    }}
-                />
-            )}
+            {
+                isMobile && isMobileMenuOpen && (
+                    <div
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                            position: "fixed",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: "rgba(0,0,0,0.5)",
+                            zIndex: 999,
+                            cursor: "pointer"
+                        }}
+                    />
+                )
+            }
 
             {/* Responsive CSS */}
             <style>
@@ -320,7 +324,7 @@ const Home = () => {
                 }
                 `}
             </style>
-        </div>
+        </div >
     );
 };
 
