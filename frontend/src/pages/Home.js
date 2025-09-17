@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SmsTable from "./SmsTable";
 import UploadExcel from "./UploadExcel";
+import icon from './logo.png';
 
 const Home = () => {
     const [refresh, setRefresh] = useState(false);
@@ -31,39 +32,37 @@ const Home = () => {
         <div
             style={{
                 minHeight: "100vh",
-                background: "linear-gradient(135deg, #3B82F6, #6366F1)",
+                background: "linear-gradient(135deg, #8394edff, #6366F1)",
                 color: "#fff",
                 padding: "20px",
                 position: "relative"
             }}
         >
-            {/* Desktop Navigation (Top Right) */}
+            {/* Desktop Navigation (Not Sticky) */}
             {!isMobile && (
                 <div style={{
-                    position: "fixed",
-                    top: "20px",
-                    right: "20px",
                     display: "flex",
+                    justifyContent: "flex-end",
                     gap: "10px",
-                    zIndex: 1001
+                    marginBottom: "30px"
                 }}>
                     {navItems.map((item) => (
                         <button
                             key={item.id}
                             onClick={() => setActiveTab(item.id)}
                             style={{
-                                padding: "8px 10px",
+                                padding: "10px 20px",
                                 borderRadius: "8px",
                                 border: "none",
                                 cursor: "pointer",
                                 background: activeTab === item.id ? "#10B981" : "rgba(255,255,255,0.2)",
                                 color: "#fff",
                                 fontWeight: "600",
-                                fontSize: "13px",
+                                fontSize: "14px",
                                 transition: "all 0.3s ease",
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "5px",
+                                gap: "8px",
                                 backdropFilter: "blur(10px)",
                                 boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
                             }}
@@ -151,33 +150,98 @@ const Home = () => {
 
             {/* Main Content */}
             <div style={{
-                textAlign: "center",
+                width: "70%",
                 padding: "20px",
                 margin: "20px auto"
             }}>
                 {activeTab === "" && (
                     <div style={{
-                        marginTop: isMobile ? "100px" : "150px",
-                        padding: "40px 20px",
+                        marginTop: isMobile ? "60px" : "30px",
+                        padding: "30px",
                         background: "rgba(255,255,255,0.1)",
                         borderRadius: "20px",
                         backdropFilter: "blur(10px)",
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)"
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                        animation: "fadeIn 1s ease-in-out",
+                        display: "flex",
+                        flexDirection: isMobile ? "column" : "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: isMobile ? "20px" : "40px"
                     }}>
-                        <h1 style={{
-                            fontSize: "3rem",
-                            marginBottom: "20px",
-                            fontWeight: "bold"
+                        {/* Logo/Image Section - Left Aligned */}
+                        <div style={{
+                            display: "flex",
+                            justifyContent: isMobile ? "center" : "flex-start",
+                            flex: isMobile ? "0 1 auto" : "0 0 auto"
                         }}>
-                            Welcome to<br />SMS System
-                        </h1>
-                        <p style={{
-                            fontSize: "1.3rem",
-                            opacity: 0.9,
-                            lineHeight: "1.6"
+                            <div style={{
+                                width: isMobile ? "120px" : "180px",
+                                height: isMobile ? "120px" : "180px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                overflow: "hidden"
+                            }}>
+                                <img
+                                    src={icon}
+                                    alt="SMS Campaign Manager"
+                                    style={{
+                                        width: isMobile ? "60px" : "200px",
+                                        height: isMobile ? "60px" : "200px"
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Text Content - Right Aligned */}
+                        <div style={{
+                            textAlign: isMobile ? "center" : "left",
+                            flex: "1"
                         }}>
-                            Manage and send bulk SMS messages efficiently
-                        </p>
+                            {/* Heading */}
+                            <h1 style={{
+                                fontSize: isMobile ? "2rem" : "2.8rem",
+                                marginBottom: "15px",
+                                fontWeight: "bold",
+                                background: "linear-gradient(45deg, #fff, #e0e7ff)",
+                                backgroundClip: "text",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent"
+                            }}>
+                                SMS PORTAL
+                            </h1>
+
+                            {/* Paragraph */}
+                            <p style={{
+                                fontSize: isMobile ? "1rem" : "1.2rem",
+                                opacity: 0.9,
+                                lineHeight: "1.6",
+                                marginBottom: "25px"
+                            }}>
+                                Effortlessly manage and send attendance reports to arents.
+                                Upload the list, and track sms status at one place.
+                            </p>
+
+                            {/* Call to Action Button */}
+                            <button
+                                onClick={() => setActiveTab("upload")}
+                                style={{
+                                    padding: "12px 25px",
+                                    borderRadius: "8px",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    background: "linear-gradient(45deg, #10B981, #059669)",
+                                    color: "#fff",
+                                    fontWeight: "600",
+                                    fontSize: isMobile ? "1rem" : "1.1rem",
+                                    transition: "all 0.3s ease",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+                                }}
+                            >
+                                Get Started Now
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -241,6 +305,18 @@ const Home = () => {
                 button:hover {
                     transform: translateY(-2px);
                     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                }
+                
+                /* Animations */
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes bounce {
+                    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                    40% { transform: translateY(-15px); }
+                    60% { transform: translateY(-7px); }
                 }
                 `}
             </style>
