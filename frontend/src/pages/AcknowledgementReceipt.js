@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
-import watermarkLogo from "./logo.png";
+import PRINCIPAL_SIGN from "./PRINCIPAL_SIGN.png";
+import HOD_SIGN from "./HOD_SIGN.png";
 
 const AcknowledgementReceipt = ({ sms, onClose }) => {
     const receiptRef = useRef();
@@ -70,14 +71,24 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
 
                     <div className="flex justify-between mt-10">
                         <div className="text-center">
-                            <div className="border-t-2 border-gray-800 w-40 mx-auto"></div>
-                            <p className="mt-2 text-gray-700 font-medium">HOD Signature</p>
+                            <img
+                                src={HOD_SIGN}
+                                alt="HOD Signature"
+                                className="h-16 mx-auto"
+                            />
+                            <p className="mt-2 text-gray-700 font-medium">HOD</p>
                         </div>
+
                         <div className="text-center">
-                            <div className="border-t-2 border-gray-800 w-40 mx-auto"></div>
-                            <p className="mt-2 text-gray-700 font-medium">Principal Signature</p>
+                            <img
+                                src={PRINCIPAL_SIGN}
+                                alt="Principal Signature"
+                                className="h-16 mx-auto"
+                            />
+                            <p className="mt-2 text-gray-700 font-medium">Principal</p>
                         </div>
                     </div>
+
                 </div>
 
 

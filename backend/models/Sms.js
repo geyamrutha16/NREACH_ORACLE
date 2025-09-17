@@ -12,11 +12,7 @@ const smsSchema = new mongoose.Schema(
         sid: { type: String },
         status: { type: String, enum: ["pending", "sent", "failed"], default: "pending" },
         smsSent: { type: Boolean, default: false },
-
-        // ✅ Add seen field
         seen: { type: Boolean, default: false },
-
-        // ✅ Store unique acknowledgment link
         ackLink: { type: String },
     },
     { timestamps: true }
