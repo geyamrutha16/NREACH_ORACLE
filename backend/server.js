@@ -5,9 +5,11 @@ import bodyParser from "body-parser";
 import { connectDB } from "./config/db.js";
 import smsRoutes from "./routes/smsRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
+import { checkTwilioAccountStatus } from "./config/twillio.js";
 
 dotenv.config();
 connectDB();
+checkTwilioAccountStatus();
 
 const app = express();
 app.use(cors({
@@ -16,7 +18,6 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
-app.use(bodyParser.json());
 
 app.use("/api/sms", smsRoutes);
 

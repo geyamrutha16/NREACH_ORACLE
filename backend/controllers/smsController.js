@@ -14,11 +14,26 @@ console.log("🔑 Twilio Phone:", process.env.TWILIO_PHONE_NUMBER);
 
 function formatPhoneNumber(num) {
     if (!num) return null;
+
     let phone = String(num).trim();
+
+    // Remove all non-digits
     phone = phone.replace(/\D/g, "");
-    if (!phone.startsWith("91")) phone = "91" + phone;
+
+    // Remove leading 0 if present
+    if (phone.startsWith("0")) {
+        phone = phone.substring(1);
+    }
+
+    // Ensure country code
+    if (!phone.startsWith("91")) {
+        phone = "91" + phone;
+    }
+
     const formatted = "+" + phone;
-    return /^\+91\d{10}$/.test(formatted) ? formatted : null;
+
+    // Validate Indian mobile numbers (should start with 6-9 after +91)
+    return /^\+91[6-9]\d{9}$/.test(formatted) ? formatted : null;
 }
 
 export const sendBulkSms = async (req, res) => {
@@ -107,6 +122,14 @@ Ph: 000-000-0000
 
             // Send SMS via Twilio
             try {
+                // In your sendBulkSms function, add:
+                console.log("📞 Processing:", Name, "- Phone:", Phone, "- Formatted:", formattedPhone);
+
+                if (!formattedPhone) {
+                    console.log("❌ Invalid phone format:", Phone);
+                    skippedRecords.push({ name: Name, phone: Phone, reason: "Invalid phone format" });
+                    continue;
+                }
                 const twilioMsg = await client.messages.create({
                     body: `${message}\n\nPlease acknowledge: ${ackLink}`,
                     to: formattedPhone,
