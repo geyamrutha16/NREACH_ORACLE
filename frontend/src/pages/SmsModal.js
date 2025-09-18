@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import html2pdf from "html2pdf.js";
 import watermarkLogo from "./logo.png"; // Replace with your logo
-import PRINCIPAL_SIGN from "./PRINCIPAL_SIGN.png";
-import HOD_SIGN from "./HOD_SIGN.png";
+import PRINCIPAL_SIGN from "./PRINCIPAL_SIGN.jpeg";
+import HOD_SIGN from "./HOD_SIGN.jpeg";
 
 const SmsModal = ({ sms, onClose }) => {
     const receiptRef = useRef();
@@ -140,9 +140,9 @@ const SmsModal = ({ sms, onClose }) => {
                                 alt="HOD Signature"
                                 className="h-16 mx-auto"
                                 width="80px"
-                                height="50px"
+                                height="100px"
                             />
-                            <p className="mt-2 text-gray-700 font-medium">HOD</p>
+                            <p className="text-gray-700 font-medium">HOD</p>
                         </div>
 
                         <div className="text-center">
@@ -150,10 +150,10 @@ const SmsModal = ({ sms, onClose }) => {
                                 src={PRINCIPAL_SIGN}
                                 alt="Principal Signature"
                                 className="h-16 mx-auto"
-                                width="80px"
-                                height="50px"
+                                width="80px" q
+                                height="100px"
                             />
-                            <p className="mt-2 text-gray-700 font-medium">Principal</p>
+                            <p className="text-gray-700 font-medium">Principal</p>
                         </div>
                     </div>
                 </div>

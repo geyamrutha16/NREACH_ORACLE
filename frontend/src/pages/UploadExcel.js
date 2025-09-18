@@ -61,16 +61,16 @@ const UploadExcel = ({ setRefresh }) => {
 
         try {
             setLoading(true);
-            showNotification("⏳ Sending bulk SMS...", "info");
+            showNotification("Sending SMS...", "info");
 
             const res = await axios.post(
                 "https://multiple-sms-backend.onrender.com/api/sms/send-bulk-sms",
                 formData
             );
 
-            console.log("[DEBUG] Bulk SMS response:", res.data);
+            console.log("[DEBUG] SMS response:", res.data);
 
-            showNotification("✅ Bulk SMS sent successfully!", "success");
+            showNotification("SMS sent successfully!", "success");
             setRefresh((prev) => !prev);
 
             // Reset inputs
@@ -81,7 +81,7 @@ const UploadExcel = ({ setRefresh }) => {
             e.target.reset();
 
         } catch (err) {
-            console.error("[DEBUG] Error sending bulk SMS:", err);
+            console.error("[DEBUG] Error sending SMS:", err);
             showNotification("Failed to send SMS. Please try again.", "error");
         } finally {
             setLoading(false);
@@ -179,7 +179,7 @@ const UploadExcel = ({ setRefresh }) => {
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
             >
-                <h2 style={{ marginBottom: "15px", fontWeight: "700" }}>📤 Send Bulk SMS</h2>
+                <h2 style={{ marginBottom: "15px", fontWeight: "700" }}>📤 Upload Attendance Report</h2>
 
                 <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
                     {/* Upload Excel */}

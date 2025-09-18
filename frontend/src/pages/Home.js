@@ -25,7 +25,7 @@ const Home = () => {
     const navItems = [
         { id: "", label: "Home", icon: "🏠" },
         { id: "upload", label: "Upload", icon: "⬆️" },
-        { id: "dashboard", label: "Dashboard", icon: "📊" }
+        { id: "dashboard", label: "TrackBoard", icon: "📊" }
     ];
 
     return (
@@ -210,7 +210,7 @@ const Home = () => {
                                     WebkitBackgroundClip: "text",
                                     WebkitTextFillColor: "transparent"
                                 }}>
-                                    SMS PORTAL
+                                    NREACH
                                 </h1>
 
                                 {/* Paragraph */}

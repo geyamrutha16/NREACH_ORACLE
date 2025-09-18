@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import watermarkLogo from "./logo.png";
+import i18n from "../i18n";
 
 const Ack = () => {
     const { smsId } = useParams();
@@ -97,6 +98,23 @@ const Ack = () => {
                 background: "linear-gradient(135deg, #6366F1, #3B82F6)",
             }}
         >
+            <div style={{ textAlign: "right", marginBottom: "10px" }}>
+                <select
+                    onChange={(e) => i18n.changeLanguage(e.target.value)}
+                    value={i18n.language}
+                    style={{
+                        padding: "6px 10px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                    }}
+                >
+                    <option value="en">English</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="ta">தமிழ்</option>
+                </select>
+            </div>
+
             <div
                 style={{
                     maxWidth: "800px",

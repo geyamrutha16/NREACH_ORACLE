@@ -12,7 +12,7 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
         printWindow.document.write(`
       <html>
         <head>
-          <title>Acknowledgement Receipt</title>
+          <title>Acknowledgement Receipt from NReach</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 20px; }
             h1 { text-align: center; color: #1e3a8a; }
