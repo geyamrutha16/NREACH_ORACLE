@@ -220,7 +220,7 @@ const Home = () => {
                                     lineHeight: "1.6",
                                     marginBottom: "25px"
                                 }}>
-                                    Effortlessly manage and send attendance reports to arents.
+                                    Effortlessly manage and send attendance reports to Parents.
                                     Upload the list, and track sms status at one place.
                                 </p>
 

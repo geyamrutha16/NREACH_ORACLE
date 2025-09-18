@@ -4,6 +4,7 @@ import axios from "axios";
 import html2pdf from "html2pdf.js";
 import watermarkLogo from "./logo.png";
 import i18n from "../i18n";
+import VoiceAgent from "../VoiceAgent";
 
 const Ack = () => {
     const { smsId } = useParams();
@@ -98,6 +99,7 @@ const Ack = () => {
                 background: "linear-gradient(135deg, #6366F1, #3B82F6)",
             }}
         >
+            <VoiceAgent />
             <div style={{ textAlign: "right", marginBottom: "10px" }}>
                 <select
                     onChange={(e) => i18n.changeLanguage(e.target.value)}
