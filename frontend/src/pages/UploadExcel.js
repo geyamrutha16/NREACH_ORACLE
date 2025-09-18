@@ -64,7 +64,7 @@ const UploadExcel = ({ setRefresh }) => {
             showNotification("Sending SMS...", "info");
 
             const res = await axios.post(
-                "https://multiple-sms-backend.onrender.com/api/sms/send-bulk-sms",
+                "https://nreach-data.onrender.com/api/sms/send-bulk-sms",
                 formData
             );
 

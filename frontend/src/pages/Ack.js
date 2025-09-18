@@ -19,12 +19,12 @@ const Ack = () => {
                 setLoading(true);
 
                 const ackRes = await axios.get(
-                    `https://multiple-sms-backend.onrender.com/api/sms/ack/${smsId}`
+                    `https://nreach-data.onrender.com/api/sms/ack/${smsId}`
                 );
                 setStatus(ackRes.data.message);
 
                 const recordRes = await axios.get(
-                    `https://multiple-sms-backend.onrender.com/api/sms/record/${smsId}`
+                    `https://nreach-data.onrender.com/api/sms/record/${smsId}`
                 );
 
                 if (recordRes.data.success) {

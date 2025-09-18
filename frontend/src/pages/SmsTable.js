@@ -24,7 +24,7 @@ const SmsTable = ({ refresh }) => {
     const fetchSms = async () => {
         setLoading(true);
         try {
-            const res = await axios.get("https://multiple-sms-backend.onrender.com/api/sms/results");
+            const res = await axios.get("https://nreach-data.onrender.com/api/sms/results");
             //const res = await axios.get("http://localhost:3000/api/sms/results");
             setSmsRecords(res.data || []);
         } catch (err) {
