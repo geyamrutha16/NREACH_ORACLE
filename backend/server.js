@@ -12,7 +12,7 @@ checkTwilioAccountStatus();
 
 const app = express();
 app.use(cors({
-    origin: "https://nreach-o855.onrender.com/",
+    origin: "https://nreach-o855.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
