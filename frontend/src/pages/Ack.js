@@ -4,6 +4,7 @@ import axios from "axios";
 import html2pdf from "html2pdf.js";
 import watermarkLogo from "./logo.png";
 import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import VoiceAgent from "../VoiceAgent";
 
 const Ack = () => {
@@ -12,6 +13,7 @@ const Ack = () => {
     const [smsData, setSmsData] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const { t } = useTranslation();
     const receiptRef = useRef();
 
     useEffect(() => {
@@ -36,14 +38,14 @@ const Ack = () => {
                 window.dispatchEvent(event);
             } catch (err) {
                 console.error("Error in Ack component:", err);
-                setStatus("❌ Error processing acknowledgment.");
+                setStatus("❌ " + t("errorProcessingAck"));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [smsId]);
+    }, [smsId, t]);
 
     const handleDownloadPDF = () => {
         const element = receiptRef.current;
@@ -84,7 +86,7 @@ const Ack = () => {
                             color: "#3B82F6",
                         }}
                     >
-                        ⏳ Loading...
+                        ⏳ {t("loading")}
                     </h1>
                 </div>
             </div>
@@ -111,8 +113,8 @@ const Ack = () => {
                     }}
                 >
                     <option value="en">English</option>
-                    <option value="te">తెలుగు</option>
                     <option value="hi">हिन्दी</option>
+                    <option value="te">తెలుగు</option>
                     <option value="ta">தமிழ்</option>
                 </select>
             </div>
@@ -128,7 +130,6 @@ const Ack = () => {
                 }}
                 ref={receiptRef}
             >
-
                 <div
                     style={{
                         display: "flex",
@@ -182,7 +183,7 @@ const Ack = () => {
                                 marginBottom: "1rem",
                             }}
                         >
-                            📋 SMS Details
+                            {t("smsDetails")}
                         </h2>
 
                         <div
@@ -193,28 +194,28 @@ const Ack = () => {
                             }}
                         >
                             <div>
-                                <strong>Name:</strong> {smsData.name}
+                                <strong>{t("name")}:</strong> {smsData.name}
                             </div>
                             <div>
-                                <strong>Roll Number:</strong> {smsData.rollNo}
+                                <strong>{t("rollNumber")}:</strong> {smsData.rollNo}
                             </div>
                             <div>
-                                <strong>Year:</strong> {smsData.year}
+                                <strong>{t("year")}:</strong> {smsData.year}
                             </div>
                             <div>
-                                <strong>Section:</strong> {smsData.section}
+                                <strong>{t("section")}:</strong> {smsData.section}
                             </div>
                             <div>
-                                <strong>Phone Number:</strong>{" "}
+                                <strong>{t("phoneNumber")}:</strong>{" "}
                                 {smsData.phoneNumber?.startsWith("+91")
                                     ? `+91 ${smsData.phoneNumber.slice(3)}`
                                     : smsData.phoneNumber}
                             </div>
                             <div>
-                                <strong>Attendance:</strong> {smsData.attendance}%
+                                <strong>{t("attendance")}:</strong> {smsData.attendance}%
                             </div>
                             <div>
-                                <strong>Status:</strong>
+                                <strong>{t("status")}:</strong>
                                 <span
                                     style={{
                                         color: smsData.status === "sent" ? "#16A34A" : "#DC2626",
@@ -226,11 +227,11 @@ const Ack = () => {
                                 </span>
                             </div>
                             <div>
-                                <strong>Acknowledged:</strong>{" "}
-                                {smsData.seen ? " ✅ Yes" : " ❌ No"}
+                                <strong>{t("acknowledged")}:</strong>{" "}
+                                {smsData.seen ? " ✅ " + t("yes") : " ❌ " + t("no")}
                             </div>
                             <div>
-                                <strong>Sent Date:</strong>{" "}
+                                <strong>{t("sentDate")}:</strong>{" "}
                                 {new Date(smsData.createdAt).toLocaleString()}
                             </div>
                         </div>
@@ -244,8 +245,8 @@ const Ack = () => {
                                     borderRadius: "6px",
                                 }}
                             >
-                                <strong>Attendance Period:</strong> {smsData.fromDate} to{" "}
-                                {smsData.toDate}
+                                <strong>{t("attendancePeriod")}:</strong>{" "}
+                                {smsData.fromDate} {t("to")} {smsData.toDate}
                             </div>
                         )}
 
@@ -257,7 +258,7 @@ const Ack = () => {
                                 borderRadius: "6px",
                             }}
                         >
-                            <strong>Message Sent:</strong>
+                            <strong>{t("messageSent")}:</strong>
                             <p
                                 style={{
                                     marginTop: "0.5rem",
@@ -294,7 +295,7 @@ const Ack = () => {
                                 (e.currentTarget.style.background = "#3B82F6")
                             }
                         >
-                            📥 Download Acknowledgment Receipt
+                            📥 {t("downloadAckReceipt")}
                         </button>
                     </div>
                 )}
