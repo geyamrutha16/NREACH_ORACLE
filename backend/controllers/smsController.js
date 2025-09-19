@@ -86,8 +86,10 @@ export const sendBulkSms = async (req, res) => {
                 skippedRecords.push({ name: Name, phone: Phone, reason: "Invalid phone" });
                 continue;
             }
-            /*
-            Narayana Engineering College, Gudur
+
+            // Create SMS message
+            const message = `
+Narayana Engineering College, Gudur
 Dept. of CSE
 
 NReach Attendance Alert
@@ -95,20 +97,7 @@ NReach Attendance Alert
 Your ward ${Name} with Roll No: ${RollNo || "N/A"} of ${Year} Year, CSE-${Section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}. 
 
 For further details, kindly contact HOD/Principal. 
-Ph: +91 81219 79628
-            */
-
-            // Create SMS message
-            const message = `
-నారాయణ ఇంజినీరింగ్ కళాశాల, గూడూరు
-సిఎస్‌ఇ విభాగం
-
-ఎన్‌రీచ్ హాజరు అలర్ట్
-
-మీ వార్డు ${Name} (రోల్ నం: ${RollNo || "N/A"}), ${Year} వ సంవత్సరం, CSE - ${Section || "N/A"} విద్యార్థి, ${fromDate} నుండి ${toDate} వరకు హాజరు శాతం ${attendance}% గా ఉంది.
-
-మరింత సమాచారం కోసం, దయచేసి విభాగాధిపతి / ప్రిన్సిపాల్‌ను సంప్రదించండి.
-                ఫోన్: +91 81219 79628`.trim();
+Ph: +91 81219 79628`.trim();
 
             // Save SMS record including rollNo
             let smsRecord = await new Sms({
