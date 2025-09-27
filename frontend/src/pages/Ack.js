@@ -10,19 +10,19 @@ import VoiceAgent from "../VoiceAgent";
 // 🔄 Custom replacements for acronyms
 const customTranslations = {
     te: {
-        "CSE": "సిఎస్‌ఇ",
-        "NReach": "ఎన్ రీచ్",
-        "HOD": "హెచ్‌ఓడి",
+        CSE: "సిఎస్‌ఇ",
+        NReach: "ఎన్ రీచ్",
+        HOD: "హెచ్‌ఓడి",
     },
     hi: {
-        "CSE": "सीएसई",
-        "NReach": "एनरीच",
-        "HOD": "एचओडी",
+        CSE: "सीएसई",
+        NReach: "एनरीच",
+        HOD: "एचओडी",
     },
     ta: {
-        "CSE": "சி.எஸ்.இ",
-        "NReach": "என் ரீச்",
-        "HOD": "எச்.ஓ.டி",
+        CSE: "சி.எஸ்.இ",
+        NReach: "என் ரீச்",
+        HOD: "எச்.ஓ.டி",
     },
 };
 
@@ -36,19 +36,36 @@ function applyCustomReplacements(text, lang) {
     return result;
 }
 
-// ✅ MyMemory API translation
+// ✅ MyMemory API translation ignoring URLs
 async function translateMessageWithMyMemory(text, targetLang) {
     if (!text) return "";
     const langMap = { en: "en", hi: "hi", te: "te", ta: "ta" };
     const langCode = langMap[targetLang] || "en";
 
     try {
+        // Extract URLs
+        const urls = [...text.matchAll(/https?:\/\/\S+/g)].map((m) => m[0]);
+        let textToTranslate = text;
+
+        // Replace URLs with placeholders
+        urls.forEach((url, index) => {
+            textToTranslate = textToTranslate.replace(url, `__URL_${index}__`);
+        });
+
         const response = await axios.get(
             `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                text
+                textToTranslate
             )}&langpair=en|${langCode}`
         );
-        return response.data.responseData.translatedText;
+
+        let translated = response.data.responseData.translatedText;
+
+        // Restore URLs
+        urls.forEach((url, index) => {
+            translated = translated.replace(`__URL_${index}__`, url);
+        });
+
+        return translated;
     } catch (err) {
         console.error("Translation error:", err);
         return text; // fallback
@@ -64,7 +81,6 @@ const Ack = () => {
 
     const { t } = useTranslation();
     const receiptRef = useRef();
-
     const currentLang = i18n.language;
 
     useEffect(() => {
@@ -90,7 +106,7 @@ const Ack = () => {
                 if (recordRes.data.success) {
                     setSmsData(recordRes.data.data);
 
-                    // ✅ Translate message + apply custom replacements
+                    // ✅ Translate message ignoring URLs + custom replacements
                     const translated = await translateMessageWithMyMemory(
                         recordRes.data.data.message,
                         currentLang
@@ -302,9 +318,7 @@ const Ack = () => {
                                         marginLeft: "0.5rem",
                                     }}
                                 >
-                                    {smsData.status === "sent"
-                                        ? t("statusSent")
-                                        : t("statusPending")}
+                                    {smsData.status === "sent" ? t("statusSent") : t("statusPending")}
                                 </span>
                             </div>
                             <div>
@@ -347,6 +361,7 @@ const Ack = () => {
                                     marginTop: "0.5rem",
                                     color: "#374151",
                                     lineHeight: "1.5",
+                                    whiteSpace: "pre-wrap",
                                 }}
                             >
                                 {translatedMessage}
@@ -372,12 +387,8 @@ const Ack = () => {
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
                                 transition: "background 0.3s",
                             }}
-                            onMouseOver={(e) =>
-                                (e.currentTarget.style.background = "#2563EB")
-                            }
-                            onMouseOut={(e) =>
-                                (e.currentTarget.style.background = "#3B82F6")
-                            }
+                            onMouseOver={(e) => (e.currentTarget.style.background = "#2563EB")}
+                            onMouseOut={(e) => (e.currentTarget.style.background = "#3B82F6")}
                         >
                             📥 {t("downloadAckReceipt")}
                         </button>
