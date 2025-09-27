@@ -5,7 +5,6 @@ import HOD_SIGN from "./HOD_SIGN.png";
 const AcknowledgementReceipt = ({ sms, onClose }) => {
     const receiptRef = useRef();
 
-    // Print/Download as PDF
     const handleDownload = () => {
         const printContent = receiptRef.current;
         const printWindow = window.open("", "", "width=800,height=600");

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Ack from "./pages/Ack";
 import Login from "./pages/Login";
+import SmsTable from "./pages/SmsTable";
 
 function App() {
   return (
@@ -9,10 +10,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Home />} />
         <Route path="/ack/:smsId" element={<Ack />} />
-        {/* fallback route */}
-        <Route path="*" element={<Home />} />
+        <Route path="/trackboard" element={<SmsTable />} />
+        <Route path="*" element={<Login />} />
       </Routes>
     </Router>
   );

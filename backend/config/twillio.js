@@ -4,7 +4,6 @@ dotenv.config();
 
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-// Function to check account status
 export const checkTwilioAccountStatus = async () => {
     try {
         const account = await client.api.accounts(process.env.TWILIO_ACCOUNT_SID).fetch();

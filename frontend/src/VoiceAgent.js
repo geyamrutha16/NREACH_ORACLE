@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Volume2 } from "lucide-react";
 
-// Remove emojis
 const removeEmojis = (str) =>
     str.replace(
         /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF]|\u24C2|\u25A0-\u25FF|\u2600-\u26FF)/g,
         ""
     );
 
-// Map i18n language codes to voices
 const langMap = {
     en: "en-IN",
     te: "te-IN",
@@ -35,7 +33,6 @@ const VoiceAgent = ({ targetRef }) => {
     }, [i18n.language]);
 
     const handleSpeak = () => {
-        // 🔹 Only read from provided ref instead of whole document
         let text = targetRef?.current?.innerText || "";
         if (!text) return;
 
@@ -68,14 +65,14 @@ const VoiceAgent = ({ targetRef }) => {
                 position: "fixed",
                 top: "5px",
                 right: "10px",
-                width: "40px",       // 🔹 fixed width
-                height: "40px",      // 🔹 fixed height
+                width: "40px",
+                height: "40px",
                 background: speaking ? "#27ba74" : "#ff5945",
                 color: "#fff",
                 borderRadius: "50%",
                 border: "none",
                 cursor: "pointer",
-                display: "flex",     // center the icon
+                display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 boxShadow: "0 4px 10px rgba(0,0,0,0.2)",

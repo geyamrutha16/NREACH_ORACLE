@@ -98,10 +98,10 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: "en", // default language
+    lng: "te",
     fallbackLng: "en",
     interpolation: {
-        escapeValue: false, // react already protects from xss
+        escapeValue: false,
     },
 });
 

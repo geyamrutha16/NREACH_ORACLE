@@ -25,4 +25,13 @@ export const loginUser = async (req, res) => {
         console.error(err);
         res.status(500).json({ success: false, message: "Server error" });
     }
+
+};
+export const logoutUser = async (req, res) => {
+    try {
+        return res.json({ success: true, message: "Logout successful" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
 };

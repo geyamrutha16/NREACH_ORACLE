@@ -10,8 +10,12 @@ const SmsTable = ({ refresh }) => {
     const [filterYear, setFilterYear] = useState("");
     const [filterSection, setFilterSection] = useState("");
     const [filterRollNo, setFilterRollNo] = useState("");
+    const [filterAcademicYear, setFilterAcademicYear] = useState("");
+    const [filterDepartment, setFilterDepartment] = useState("");
     const [selectedSms, setSelectedSms] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    const loginRole = localStorage.getItem("role") || "operator";
 
     // Check screen size for responsiveness
     useEffect(() => {
@@ -23,13 +27,16 @@ const SmsTable = ({ refresh }) => {
     const fetchSms = async () => {
         setLoading(true);
         try {
+            console.log("🔄 Fetching SMS records...");
+            const token = localStorage.getItem("token");
             const res = await axios.get(
-                //"http://localhost:3000/api/sms/results"
-                "https://nreach-data.onrender.com/api/sms/results"
+                "https://nreach-data.onrender.com/api/sms/results",
+                { headers: { Authorization: `Bearer ${token}` } }
             );
+            console.log(`✅ Fetched ${res.data.length} SMS records`);
             setSmsRecords(res.data || []);
         } catch (err) {
-            console.error("Error fetching SMS results:", err);
+            console.error("❌ Error fetching SMS results:", err);
         } finally {
             setLoading(false);
         }
@@ -39,16 +46,24 @@ const SmsTable = ({ refresh }) => {
         fetchSms();
     }, [refresh]);
 
+    // Filtered records
     const filteredRecords = smsRecords.filter((sms) => {
         const yearMatch = filterYear ? sms.year === filterYear : true;
         const sectionMatch = filterSection ? sms.section === filterSection : true;
         const rollMatch = filterRollNo
             ? sms.rollNo?.toLowerCase().includes(filterRollNo.toLowerCase())
             : true;
-        return yearMatch && sectionMatch && rollMatch;
+        const academicYearMatch = filterAcademicYear
+            ? sms.academicYear === filterAcademicYear
+            : true;
+        const departmentMatch =
+            loginRole === "operator" && filterDepartment
+                ? sms.department === filterDepartment
+                : true;
+        return yearMatch && sectionMatch && rollMatch && academicYearMatch && departmentMatch;
     });
 
-    // --- Excel download function ---
+    // Excel download
     const downloadExcel = () => {
         if (!filteredRecords.length) return;
 
@@ -57,7 +72,9 @@ const SmsTable = ({ refresh }) => {
             Name: sms.name,
             "Phone Number": sms.phoneNumber,
             Year: sms.year,
-            Class: sms.section,
+            "Class": sms.section,
+            "Academic Year": sms.academicYear,
+            Department: sms.department,
             Status: sms.status,
             "Sent At": sms.createdAt ? new Date(sms.createdAt).toLocaleString() : "N/A",
             Acknowledged: sms.seen ? "Yes" : "No",
@@ -67,11 +84,7 @@ const SmsTable = ({ refresh }) => {
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "SMS Records");
 
-        const excelBuffer = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "array",
-        });
-
+        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
         const data = new Blob([excelBuffer], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -101,7 +114,6 @@ const SmsTable = ({ refresh }) => {
                         width: isMobile ? "100%" : "auto",
                     }}
                 >
-                    {/* Year filter */}
                     <label
                         style={{
                             display: "flex",
@@ -132,7 +144,6 @@ const SmsTable = ({ refresh }) => {
                         {!isMobile && <span style={{ fontWeight: 500 }}>Year</span>}
                     </label>
 
-                    {/* Section filter */}
                     <label
                         style={{
                             display: "flex",
@@ -162,9 +173,75 @@ const SmsTable = ({ refresh }) => {
                         </select>
                         {!isMobile && <span style={{ fontWeight: 500 }}>Section</span>}
                     </label>
+
+                    <label
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: isMobile ? "flex-start" : "center",
+                            gap: "8px",
+                            flex: isMobile ? "1" : "none",
+                            width: isMobile ? "100%" : "auto",
+                        }}
+                    >
+                        {isMobile && <span style={{ fontWeight: 500 }}>Academic Year:</span>}
+                        <select
+                            value={filterAcademicYear}
+                            onChange={(e) => setFilterAcademicYear(e.target.value)}
+                            style={{
+                                padding: "8px 12px",
+                                borderRadius: "6px",
+                                border: "1px solid #ccc",
+                                flex: "1",
+                            }}
+                        >
+                            <option value="">{isMobile ? "All Academic Years" : "All"}</option>
+                            {Array.from(
+                                { length: new Date().getFullYear() - 2021 },
+                                (_, i) => 2022 + i
+                            ).map((year) => (
+                                <option key={year} value={year.toString()}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                        {!isMobile && <span style={{ fontWeight: 500 }}>Academic Year</span>}
+                    </label>
+
+                    {loginRole === "operator" && (
+                        <label
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: isMobile ? "flex-start" : "center",
+                                gap: "8px",
+                                flex: isMobile ? "1" : "none",
+                                width: isMobile ? "100%" : "auto",
+                            }}
+                        >
+                            {isMobile && <span style={{ fontWeight: 500 }}>Department:</span>}
+                            <select
+                                value={filterDepartment}
+                                onChange={(e) => setFilterDepartment(e.target.value)}
+                                style={{
+                                    padding: "8px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #ccc",
+                                    flex: "1",
+                                }}
+                            >
+                                <option value="">{isMobile ? "All Departments" : "All"}</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="EEE">EEE</option>
+                                <option value="MECH">MECH</option>
+                                <option value="CIVIL">CIVIL</option>
+                            </select>
+                            {!isMobile && <span style={{ fontWeight: 500 }}>Department</span>}
+                        </label>
+                    )}
                 </div>
 
-                {/* Roll number search */}
                 <div
                     style={{
                         display: "flex",
@@ -191,7 +268,6 @@ const SmsTable = ({ refresh }) => {
                     />
                 </div>
 
-                {/* Buttons */}
                 <button
                     onClick={fetchSms}
                     style={{
@@ -225,7 +301,6 @@ const SmsTable = ({ refresh }) => {
                 </button>
             </div>
 
-            {/* Table */}
             {loading ? (
                 <p>Loading...</p>
             ) : (
@@ -276,6 +351,7 @@ const SmsTable = ({ refresh }) => {
                                     <th style={{ padding: "12px" }}>Phone Number</th>
                                     <th style={{ padding: "12px" }}>Year</th>
                                     <th style={{ padding: "12px" }}>Class</th>
+                                    {loginRole === "operator" && <th style={{ padding: "12px" }}>Department</th>}
                                     <th style={{ padding: "12px" }}>Status</th>
                                     <th style={{ padding: "12px" }}>Sent At</th>
                                     <th style={{ padding: "12px" }}>Acknowledged</th>
@@ -285,7 +361,7 @@ const SmsTable = ({ refresh }) => {
                                 {filteredRecords.length === 0 ? (
                                     <tr>
                                         <td
-                                            colSpan="8"
+                                            colSpan={loginRole === "operator" ? 9 : 8}
                                             style={{ textAlign: "center", padding: "1rem" }}
                                         >
                                             No records found
@@ -315,11 +391,16 @@ const SmsTable = ({ refresh }) => {
                                             <td style={{ padding: "12px" }}>{sms.phoneNumber}</td>
                                             <td style={{ padding: "12px" }}>{sms.year}</td>
                                             <td style={{ padding: "12px" }}>{sms.section}</td>
+                                            {loginRole === "operator" && (
+                                                <td style={{ padding: "12px" }}>{sms.department}</td>
+                                            )}
                                             <td
                                                 style={{
                                                     padding: "12px",
                                                     color:
-                                                        sms.status === "sent" ? "#16A34A" : "#DC2626",
+                                                        sms.status === "sent"
+                                                            ? "#16A34A"
+                                                            : "#DC2626",
                                                     fontWeight: "600",
                                                 }}
                                             >

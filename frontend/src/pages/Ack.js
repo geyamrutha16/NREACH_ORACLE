@@ -33,7 +33,7 @@ const Ack = () => {
 
                 if (recordRes.data.success) {
                     setSmsData(recordRes.data.data);
-                    setTranslatedMessage(recordRes.data.data.message); // default text
+                    setTranslatedMessage(recordRes.data.data.message);
                 }
 
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
@@ -49,7 +49,6 @@ const Ack = () => {
         fetchData();
     }, [smsId, t]);
 
-    // Translate backend message when language changes
     useEffect(() => {
         if (!smsData?.message) return;
 
@@ -70,7 +69,7 @@ const Ack = () => {
                 setTranslatedMessage(data.responseData.translatedText);
             } catch (error) {
                 console.error("Translation error:", error);
-                setTranslatedMessage(smsData.message); // fallback
+                setTranslatedMessage(smsData.message);
             }
         };
 
@@ -140,9 +139,7 @@ const Ack = () => {
                 flexWrap: "wrap",
                 marginBottom: "10px"
             }}>
-                {/* Voice button (speaker) */}
                 <VoiceAgent targetRef={receiptRef} />
-                {/* Language selector */}
                 <select
                     onChange={(e) => i18n.changeLanguage(e.target.value)}
                     value={i18n.language}

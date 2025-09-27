@@ -7,25 +7,31 @@ function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError("");
+        setLoading(true);
+
         try {
-            const res = await axios.post("http://localhost:5000/api/login", {
+            const res = await axios.post("https://nreach-data.onrender.com/api/login", {
                 username,
                 password,
             });
 
             if (res.data.success) {
-                // store token & role
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("role", res.data.role);
-
-                navigate("/home"); // redirect to dashboard
+                navigate("/home");
+            } else {
+                setError("Invalid username or password");
             }
         } catch (err) {
             setError("Invalid username or password");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -77,6 +83,7 @@ function Login() {
                             borderRadius: "8px",
                             border: "1px solid #ccc",
                         }}
+                        disabled={loading}
                     />
                     <input
                         type="password"
@@ -90,21 +97,23 @@ function Login() {
                             borderRadius: "8px",
                             border: "1px solid #ccc",
                         }}
+                        disabled={loading}
                     />
                     <button
                         type="submit"
+                        disabled={loading}
                         style={{
                             width: "95%",
                             padding: "12px",
-                            background: "#667eea",
+                            background: loading ? "#999" : "#667eea",
                             color: "#fff",
                             border: "none",
                             borderRadius: "8px",
-                            cursor: "pointer",
+                            cursor: loading ? "not-allowed" : "pointer",
                             fontWeight: "bold",
                         }}
                     >
-                        Login
+                        {loading ? "Processing..." : "Login"}
                     </button>
                 </form>
             </div>

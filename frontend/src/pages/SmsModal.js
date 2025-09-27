@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import html2pdf from "html2pdf.js";
-import watermarkLogo from "./logo.png"; // Replace with your logo
+import watermarkLogo from "./logo.png";
 import PRINCIPAL_SIGN from "./PRINCIPAL_SIGN.jpeg";
 import HOD_SIGN from "./HOD_SIGN.jpeg";
 
@@ -11,7 +11,7 @@ const SmsModal = ({ sms, onClose }) => {
         if (!receiptRef.current) return;
 
         const opt = {
-            margin: [0.5, 0.5], // top/bottom, left/right
+            margin: [0.5, 0.5],
             filename: `${sms?.name || "receipt"}_acknowledgment.pdf`,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: { scale: 2 },
@@ -52,7 +52,6 @@ const SmsModal = ({ sms, onClose }) => {
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close Button (Not in PDF) */}
                 <button
                     onClick={onClose}
                     style={{
@@ -70,9 +69,7 @@ const SmsModal = ({ sms, onClose }) => {
                     ×
                 </button>
 
-                {/* Content that goes to PDF */}
                 <div ref={receiptRef} style={{ position: "relative", zIndex: 1 }}>
-                    {/* Watermark */}
                     <img
                         src={watermarkLogo}
                         alt="watermark"
@@ -94,7 +91,7 @@ const SmsModal = ({ sms, onClose }) => {
                             marginBottom: "15px",
                             fontSize: "28px",
                             color: "#057aff",
-                            textAlign: "center",   // ✅ Center heading
+                            textAlign: "center",
                         }}
                     >
                         Acknowledgement Receipt
@@ -124,16 +121,6 @@ const SmsModal = ({ sms, onClose }) => {
                             paddingTop: "20px",
                         }}
                     >
-                        {/*
-                        <div style={{ textAlign: "center" }}>
-                            <p>____________________</p>
-                            <p>HOD</p>
-                        </div>
-                        <div style={{ textAlign: "center" }}>
-                            <p>____________________</p>
-                            <p>Principal</p>
-                        </div>
-                        */}
                         <div className="text-center">
                             <img
                                 src={HOD_SIGN}
@@ -158,7 +145,6 @@ const SmsModal = ({ sms, onClose }) => {
                     </div>
                 </div>
 
-                {/* Buttons (Not in PDF) */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
                     <button
                         onClick={handleDownload}

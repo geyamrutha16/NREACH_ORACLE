@@ -2,21 +2,21 @@ import React, { useState, useEffect } from "react";
 import SmsTable from "./SmsTable";
 import UploadExcel from "./UploadExcel";
 import icon from './logo.png';
+import axios from "axios";
 
 const Home = () => {
     const [refresh, setRefresh] = useState(false);
-    const [activeTab, setActiveTab] = useState(""); // "" | upload | dashboard
+    const [activeTab, setActiveTab] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [role, setRole] = useState("");
+    const [logoutLoading, setLogoutLoading] = useState(false);
 
-    // Get role from localStorage on mount
     useEffect(() => {
         const storedRole = localStorage.getItem("role");
         setRole(storedRole || "");
     }, []);
 
-    // Check screen size on mount and resize
     useEffect(() => {
         const checkScreenSize = () => {
             setIsMobile(window.innerWidth <= 768);
@@ -26,12 +26,27 @@ const Home = () => {
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
 
-    // Navigation items based on role
     const navItems = [
         { id: "", label: "Home", icon: "🏠" },
         ...(role === "operator" ? [{ id: "upload", label: "Upload", icon: "⬆️" }] : []),
         { id: "dashboard", label: "TrackBoard", icon: "📊" }
     ];
+
+    const handleLogout = async () => {
+        setLogoutLoading(true);
+        try {
+            await axios.post("https://nreach-data.onrender.com/api/logout", {}, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
+        } catch (err) {
+            console.error("Logout API failed");
+        } finally {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            window.location.href = "/";
+            setLogoutLoading(false);
+        }
+    };
 
     return (
         <div
@@ -44,7 +59,6 @@ const Home = () => {
                 fontFamily: "Arial, sans-serif"
             }}
         >
-            {/* Desktop Navigation */}
             {!isMobile && (
                 <div style={{
                     display: "flex",
@@ -77,10 +91,31 @@ const Home = () => {
                             {item.label}
                         </button>
                     ))}
+
+                    <button
+                        onClick={handleLogout}
+                        disabled={logoutLoading}
+                        style={{
+                            padding: "10px 20px",
+                            borderRadius: "8px",
+                            border: "none",
+                            cursor: logoutLoading ? "not-allowed" : "pointer",
+                            background: logoutLoading ? "#999" : "#EF4444",
+                            color: "#fff",
+                            fontWeight: "600",
+                            fontSize: "14px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                            transition: "all 0.3s ease"
+                        }}
+                    >
+                        {logoutLoading ? "Logging out..." : "🔒 Logout"}
+                    </button>
                 </div>
             )}
 
-            {/* Mobile Hamburger Menu */}
             {isMobile && (
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -104,7 +139,6 @@ const Home = () => {
                 </button>
             )}
 
-            {/* Mobile Menu */}
             {isMobile && isMobileMenuOpen && (
                 <div style={{
                     position: "fixed",
@@ -150,18 +184,37 @@ const Home = () => {
                                 {item.label}
                             </button>
                         ))}
+
+                        <button
+                            onClick={handleLogout}
+                            disabled={logoutLoading}
+                            style={{
+                                padding: "15px 20px",
+                                borderRadius: "8px",
+                                border: "none",
+                                cursor: logoutLoading ? "not-allowed" : "pointer",
+                                background: logoutLoading ? "#999" : "#EF4444",
+                                color: "#fff",
+                                fontWeight: "600",
+                                fontSize: "16px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                transition: "all 0.3s ease"
+                            }}
+                        >
+                            {logoutLoading ? "Logging out..." : "🔒 Logout"}
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Main Content */}
             <div style={{
                 textAlign: "center",
                 padding: "20px",
                 margin: "20px auto",
                 maxWidth: "1200px"
             }}>
-                {/* Home Tab */}
                 {activeTab === "" && (
                     <div style={{
                         marginTop: isMobile ? "60px" : "30px",
@@ -175,7 +228,6 @@ const Home = () => {
                         alignItems: "center",
                         gap: "20px"
                     }}>
-                        {/* Logo */}
                         <div style={{
                             display: "flex",
                             justifyContent: "center",
@@ -200,7 +252,6 @@ const Home = () => {
                             </div>
                         </div>
 
-                        {/* Text */}
                         <div style={{
                             textAlign: isMobile ? "center" : "left",
                             flex: "1"
@@ -247,10 +298,8 @@ const Home = () => {
                     </div>
                 )}
 
-                {/* Upload Tab */}
                 {activeTab === "upload" && <UploadExcel setRefresh={setRefresh} />}
 
-                {/* Dashboard Tab */}
                 {activeTab === "dashboard" && (
                     <div style={{
                         background: "#fff",
@@ -266,7 +315,6 @@ const Home = () => {
                 )}
             </div>
 
-            {/* Overlay */}
             {isMobile && isMobileMenuOpen && (
                 <div
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -283,7 +331,6 @@ const Home = () => {
                 />
             )}
 
-            {/* Global Styles */}
             <style>
                 {`
                 @media (max-width: 768px) {
