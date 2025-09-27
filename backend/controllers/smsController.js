@@ -86,6 +86,17 @@ export const sendBulkSms = async (req, res) => {
                 skippedRecords.push({ name: Name, phone: Phone, reason: "Invalid phone" });
                 continue;
             }
+            if (!excelYear) {
+                console.warn(`Skipping ${Name} because Excel year is missing`);
+                skippedRecords.push({ name: Name, phone: Phone, reason: "Missing Excel Year" });
+                continue;
+            }
+
+            if (!academicYear) {
+                console.warn(`Skipping ${Name} because academic year is missing`);
+                skippedRecords.push({ name: Name, phone: Phone, reason: "Missing Academic Year" });
+                continue;
+            }
 
             // Create SMS message
             const message = `

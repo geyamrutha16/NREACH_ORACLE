@@ -24,8 +24,8 @@ const SmsTable = ({ refresh }) => {
         setLoading(true);
         try {
             const res = await axios.get(
-                "http://localhost:3000/api/sms/results"
-                //"https://nreach-data.onrender.com/api/sms/results"
+                //"http://localhost:3000/api/sms/results"
+                "https://nreach-data.onrender.com/api/sms/results"
             );
             setSmsRecords(res.data || []);
         } catch (err) {

@@ -124,6 +124,7 @@ const Ack = () => {
     }
 
     return (
+
         <div
             style={{
                 minHeight: "100vh",
@@ -131,8 +132,17 @@ const Ack = () => {
                 background: "linear-gradient(135deg, #6366F1, #3B82F6)",
             }}
         >
-            <VoiceAgent />
-            <div style={{ textAlign: "right", marginBottom: "10px" }}>
+            <div style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "10px",
+                flexWrap: "wrap",
+                marginBottom: "10px"
+            }}>
+                {/* Voice button (speaker) */}
+                <VoiceAgent targetRef={receiptRef} />
+                {/* Language selector */}
                 <select
                     onChange={(e) => i18n.changeLanguage(e.target.value)}
                     value={i18n.language}
@@ -140,6 +150,8 @@ const Ack = () => {
                         padding: "6px 10px",
                         borderRadius: "6px",
                         border: "1px solid #ccc",
+                        minWidth: "120px",
+                        marginRight: "50px",
                     }}
                 >
                     <option value="en">English</option>
