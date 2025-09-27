@@ -7,14 +7,65 @@ import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import VoiceAgent from "../VoiceAgent";
 
+// 🔄 Custom replacements for acronyms
+const customTranslations = {
+    te: {
+        "CSE": "సిఎస్‌ఇ",
+        "NReach": "ఎన్ రీచ్",
+        "HOD": "హెచ్‌ఓడి",
+    },
+    hi: {
+        "CSE": "सीएसई",
+        "NReach": "एनरीच",
+        "HOD": "एचओडी",
+    },
+    ta: {
+        "CSE": "சி.எஸ்.இ",
+        "NReach": "என் ரீச்",
+        "HOD": "எச்.ஓ.டி",
+    },
+};
+
+function applyCustomReplacements(text, lang) {
+    if (!text || !customTranslations[lang]) return text;
+    let result = text;
+    for (const [key, value] of Object.entries(customTranslations[lang])) {
+        const regex = new RegExp(`\\b${key}\\b`, "g");
+        result = result.replace(regex, value);
+    }
+    return result;
+}
+
+// ✅ MyMemory API translation
+async function translateMessageWithMyMemory(text, targetLang) {
+    if (!text) return "";
+    const langMap = { en: "en", hi: "hi", te: "te", ta: "ta" };
+    const langCode = langMap[targetLang] || "en";
+
+    try {
+        const response = await axios.get(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+                text
+            )}&langpair=en|${langCode}`
+        );
+        return response.data.responseData.translatedText;
+    } catch (err) {
+        console.error("Translation error:", err);
+        return text; // fallback
+    }
+}
+
 const Ack = () => {
     const { smsId } = useParams();
     const [status, setStatus] = useState("Processing acknowledgment...");
     const [smsData, setSmsData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [translatedMessage, setTranslatedMessage] = useState("");
 
     const { t } = useTranslation();
     const receiptRef = useRef();
+
+    const currentLang = i18n.language;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,6 +89,13 @@ const Ack = () => {
 
                 if (recordRes.data.success) {
                     setSmsData(recordRes.data.data);
+
+                    // ✅ Translate message + apply custom replacements
+                    const translated = await translateMessageWithMyMemory(
+                        recordRes.data.data.message,
+                        currentLang
+                    );
+                    setTranslatedMessage(applyCustomReplacements(translated, currentLang));
                 }
 
                 // Dispatch event
@@ -52,7 +110,7 @@ const Ack = () => {
         };
 
         fetchData();
-    }, [smsId, t]);
+    }, [smsId, t, currentLang]);
 
     const handleDownloadPDF = () => {
         const element = receiptRef.current;
@@ -291,7 +349,7 @@ const Ack = () => {
                                     lineHeight: "1.5",
                                 }}
                             >
-                                {smsData.message}
+                                {translatedMessage}
                             </p>
                         </div>
                     </div>
