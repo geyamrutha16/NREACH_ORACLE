@@ -268,8 +268,6 @@ const SmsTable = ({ refresh }) => {
                     />
                 </div>
 
-
-                {/*
                 <button
                     onClick={fetchSms}
                     style={{
@@ -285,7 +283,6 @@ const SmsTable = ({ refresh }) => {
                 >
                     🔄 Refresh
                 </button>
-                */}
 
                 <button
                     onClick={downloadExcel}
