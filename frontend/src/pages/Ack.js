@@ -11,9 +11,6 @@ const Ack = () => {
     const { smsId } = useParams();
     const [status, setStatus] = useState("Processing acknowledgment...");
     const [smsData, setSmsData] = useState(null);
-    const [translatedMessage, setTranslatedMessage] = useState("");
-    const [translatedStatus, setTranslatedStatus] = useState("");
-    const [translatedAck, setTranslatedAck] = useState("");
     const [loading, setLoading] = useState(true);
 
     const { t } = useTranslation();
@@ -24,20 +21,26 @@ const Ack = () => {
             try {
                 setLoading(true);
 
+                // ✅ Get acknowledgment status
                 const ackRes = await axios.get(
                     `https://nreach-data.onrender.com/api/sms/ack/${smsId}`
                 );
-                setStatus(ackRes.data.message);
+                setStatus(
+                    ackRes.data.message.includes("Acknowledgment")
+                        ? t("ackRecorded")
+                        : ackRes.data.message
+                );
 
+                // ✅ Get SMS record
                 const recordRes = await axios.get(
                     `https://nreach-data.onrender.com/api/sms/record/${smsId}`
                 );
 
                 if (recordRes.data.success) {
                     setSmsData(recordRes.data.data);
-                    setTranslatedMessage(recordRes.data.data.message);
                 }
 
+                // Dispatch event
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
                 window.dispatchEvent(event);
             } catch (err) {
@@ -50,51 +53,6 @@ const Ack = () => {
 
         fetchData();
     }, [smsId, t]);
-
-    // 🔄 Translate dynamic values with API
-    useEffect(() => {
-        if (!smsData) return;
-
-        const translateDynamic = async () => {
-            try {
-                const lang = i18n.language;
-                if (lang === "en") {
-                    setTranslatedMessage(smsData.message);
-                    setTranslatedStatus(smsData.status);
-                    setTranslatedAck(smsData.seen ? "Yes" : "No");
-                    return;
-                }
-
-                // Combine all dynamic values into one request
-                const textToTranslate = [
-                    smsData.message,
-                    smsData.status,
-                    smsData.seen ? "Yes" : "No",
-                ].join(" ||| ");
-
-                const res = await fetch(
-                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                        textToTranslate
-                    )}&langpair=en|${lang}`
-                );
-                const data = await res.json();
-
-                const [msg, stat, ack] =
-                    data.responseData.translatedText.split(" ||| ");
-
-                setTranslatedMessage(msg);
-                setTranslatedStatus(stat);
-                setTranslatedAck(ack);
-            } catch (error) {
-                console.error("Translation error:", error);
-                setTranslatedMessage(smsData.message);
-                setTranslatedStatus(smsData.status);
-                setTranslatedAck(smsData.seen ? "Yes" : "No");
-            }
-        };
-
-        translateDynamic();
-    }, [i18n.language, smsData]);
 
     const handleDownloadPDF = () => {
         const element = receiptRef.current;
@@ -190,6 +148,7 @@ const Ack = () => {
                 }}
                 ref={receiptRef}
             >
+                {/* College Logo + Name */}
                 <div
                     style={{
                         display: "flex",
@@ -211,6 +170,7 @@ const Ack = () => {
                     {t("collegeName")}
                 </div>
 
+                {/* Acknowledgment Status */}
                 <h1
                     style={{
                         fontSize: "1.4rem",
@@ -226,6 +186,7 @@ const Ack = () => {
                     {status}
                 </h1>
 
+                {/* SMS Details */}
                 {smsData && (
                     <div
                         style={{
@@ -283,14 +244,14 @@ const Ack = () => {
                                         marginLeft: "0.5rem",
                                     }}
                                 >
-                                    {translatedStatus || smsData.status}
+                                    {smsData.status === "sent"
+                                        ? t("statusSent")
+                                        : t("statusPending")}
                                 </span>
                             </div>
                             <div>
                                 <strong>{t("acknowledged")}:</strong>{" "}
-                                {smsData.seen
-                                    ? " ✅ " + (translatedAck || t("yes"))
-                                    : " ❌ " + (translatedAck || t("no"))}
+                                {smsData.seen ? "✅ " + t("yes") : "❌ " + t("no")}
                             </div>
                             <div>
                                 <strong>{t("sentDate")}:</strong>{" "}
@@ -298,6 +259,7 @@ const Ack = () => {
                             </div>
                         </div>
 
+                        {/* Attendance Period */}
                         {smsData.fromDate && smsData.toDate && (
                             <div
                                 style={{
@@ -312,6 +274,7 @@ const Ack = () => {
                             </div>
                         )}
 
+                        {/* Sent Message */}
                         <div
                             style={{
                                 marginTop: "1.5rem",
@@ -328,12 +291,13 @@ const Ack = () => {
                                     lineHeight: "1.5",
                                 }}
                             >
-                                {translatedMessage}
+                                {smsData.message}
                             </p>
                         </div>
                     </div>
                 )}
 
+                {/* Download Receipt */}
                 {smsData && (
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
                         <button
