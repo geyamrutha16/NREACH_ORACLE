@@ -105,21 +105,40 @@ export const sendBulkSms = async (req, res) => {
 
             try {
                 const ackLink = `${process.env.FRONTEND_URL}/ack/`;
+
+                // Attendance status logic (English version)
+                let statusIcon = "";
+                let statusText = "";
+
+                if (attendance < 50) {
+                    statusIcon = "🔴";
+                    statusText = "Attendance is very low!";
+                } else if (attendance < 65) {
+                    statusIcon = "🟡";
+                    statusText = "Attendance is not satisfactory.";
+                } else if (attendance < 75) {
+                    statusIcon = "🟢";
+                    statusText = "Attendance is at a normal level.";
+                } else {
+                    statusIcon = "✅";
+                    statusText = "Attendance is good.";
+                }
+
+                // Construct the SMS message
                 const message = `
 Narayana Engineering College, Gudur
 Dept. of ${department}
 
-NReach Attendance Alert
+Attendance Alert
 
 Your ward ${name} (Roll No: ${rollNo || "N/A"}), ${excelYear} year, ${department} - ${section || "N/A"} student, has an attendance of ${attendance}% from ${fromDate} to ${toDate}.
 
-🔴 Danger: Attendance critically low!
+${statusIcon} ${statusText}
 
 Please click this link to acknowledge: ${ackLink}
-
-For further details, kindly contact HOD/Principal. Ph: +91 81219 79628
                 `.trim();
 
+                // Save SMS record
                 let smsRecord = await new Sms({
                     rollNo,
                     name,
@@ -141,6 +160,7 @@ For further details, kindly contact HOD/Principal. Ph: +91 81219 79628
                 await smsRecord.save();
                 console.log("📝 SMS record created:", smsRecord._id);
 
+                // Send SMS via Twilio
                 try {
                     const twilioMsg = await client.messages.create({
                         body: `${smsRecord.message}\n\nPlease acknowledge: ${smsRecord.ackLink}`,
@@ -185,7 +205,6 @@ For further details, kindly contact HOD/Principal. Ph: +91 81219 79628
         res.status(500).json({ error: err.message });
     }
 };
-
 
 export const getSmsResults = async (req, res) => {
     try {
