@@ -48,7 +48,7 @@ async function translateMessageWithMyMemory(text, targetLang) {
 
         const response = await axios.get(
             `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                textToTranslate
+                text
             )}&langpair=en|${langCode}`
         );
 
