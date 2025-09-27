@@ -106,37 +106,32 @@ export const sendBulkSms = async (req, res) => {
             try {
                 const ackLink = `${process.env.FRONTEND_URL}/ack/`;
 
-                // Attendance status logic (English version)
+                // Attendance status logic (Telugu, concise for Twilio trial)
                 let statusIcon = "";
                 let statusText = "";
 
                 if (attendance < 50) {
                     statusIcon = "🔴";
-                    statusText = "Attendance is very low!";
+                    statusText = "హాజరు చాలా తక్కువ!";
                 } else if (attendance < 65) {
                     statusIcon = "🟡";
-                    statusText = "Attendance is not satisfactory.";
+                    statusText = "హాజరు సరిగా లేదు!";
                 } else if (attendance < 75) {
                     statusIcon = "🟢";
-                    statusText = "Attendance is at a normal level.";
+                    statusText = "హాజరు సగటు";
                 } else {
                     statusIcon = "✅";
-                    statusText = "Attendance is good.";
+                    statusText = "హాజరు మంచి";
                 }
 
-                // Construct the SMS message
+                // Construct short SMS message
                 const message = `
-Narayana Engineering College, Gudur
-Dept. of ${department}
-
-Attendance Alert
-
-Your ward ${name} (Roll No: ${rollNo || "N/A"}), ${excelYear} year, ${department} - ${section || "N/A"} student, has an attendance of ${attendance}% from ${fromDate} to ${toDate}.
-
+నారాయణ ఇంజినీరింగ్ కళాశాల, గూడూరు
+${name} (${rollNo || "N/A"}), ${excelYear} - ${section || "N/A"} హాజరు: ${attendance}%
 ${statusIcon} ${statusText}
+స్వీకరించడానికి: ${ackLink}
+`.trim();
 
-Please click this link to acknowledge: ${ackLink}
-                `.trim();
 
                 // Save SMS record
                 let smsRecord = await new Sms({
