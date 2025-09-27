@@ -98,7 +98,7 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: "te",
+    lng: "te", // default language
     fallbackLng: "en",
     interpolation: {
         escapeValue: false,

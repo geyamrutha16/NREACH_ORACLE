@@ -12,6 +12,8 @@ const Ack = () => {
     const [status, setStatus] = useState("Processing acknowledgment...");
     const [smsData, setSmsData] = useState(null);
     const [translatedMessage, setTranslatedMessage] = useState("");
+    const [translatedStatus, setTranslatedStatus] = useState("");
+    const [translatedAck, setTranslatedAck] = useState("");
     const [loading, setLoading] = useState(true);
 
     const { t } = useTranslation();
@@ -49,31 +51,49 @@ const Ack = () => {
         fetchData();
     }, [smsId, t]);
 
+    // 🔄 Translate dynamic values with API
     useEffect(() => {
-        if (!smsData?.message) return;
+        if (!smsData) return;
 
-        const translate = async () => {
+        const translateDynamic = async () => {
             try {
                 const lang = i18n.language;
                 if (lang === "en") {
                     setTranslatedMessage(smsData.message);
+                    setTranslatedStatus(smsData.status);
+                    setTranslatedAck(smsData.seen ? "Yes" : "No");
                     return;
                 }
 
+                // Combine all dynamic values into one request
+                const textToTranslate = [
+                    smsData.message,
+                    smsData.status,
+                    smsData.seen ? "Yes" : "No",
+                ].join(" ||| ");
+
                 const res = await fetch(
                     `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                        smsData.message
+                        textToTranslate
                     )}&langpair=en|${lang}`
                 );
                 const data = await res.json();
-                setTranslatedMessage(data.responseData.translatedText);
+
+                const [msg, stat, ack] =
+                    data.responseData.translatedText.split(" ||| ");
+
+                setTranslatedMessage(msg);
+                setTranslatedStatus(stat);
+                setTranslatedAck(ack);
             } catch (error) {
                 console.error("Translation error:", error);
                 setTranslatedMessage(smsData.message);
+                setTranslatedStatus(smsData.status);
+                setTranslatedAck(smsData.seen ? "Yes" : "No");
             }
         };
 
-        translate();
+        translateDynamic();
     }, [i18n.language, smsData]);
 
     const handleDownloadPDF = () => {
@@ -123,7 +143,6 @@ const Ack = () => {
     }
 
     return (
-
         <div
             style={{
                 minHeight: "100vh",
@@ -131,14 +150,16 @@ const Ack = () => {
                 background: "linear-gradient(135deg, #6366F1, #3B82F6)",
             }}
         >
-            <div style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                gap: "10px",
-                flexWrap: "wrap",
-                marginBottom: "10px"
-            }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                    marginBottom: "10px",
+                }}
+            >
                 <VoiceAgent targetRef={receiptRef} />
                 <select
                     onChange={(e) => i18n.changeLanguage(e.target.value)}
@@ -188,7 +209,6 @@ const Ack = () => {
                         style={{ height: "40px", width: "40px", marginRight: "10px" }}
                     />
                     {t("collegeName")}
-
                 </div>
 
                 <h1
@@ -263,12 +283,14 @@ const Ack = () => {
                                         marginLeft: "0.5rem",
                                     }}
                                 >
-                                    {smsData.status.toUpperCase()}
+                                    {translatedStatus || smsData.status}
                                 </span>
                             </div>
                             <div>
                                 <strong>{t("acknowledged")}:</strong>{" "}
-                                {smsData.seen ? " ✅ " + t("yes") : " ❌ " + t("no")}
+                                {smsData.seen
+                                    ? " ✅ " + (translatedAck || t("yes"))
+                                    : " ❌ " + (translatedAck || t("no"))}
                             </div>
                             <div>
                                 <strong>{t("sentDate")}:</strong>{" "}
