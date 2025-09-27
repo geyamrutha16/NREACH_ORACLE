@@ -7,7 +7,8 @@ const smsSchema = new mongoose.Schema(
         phoneNumber: { type: String, required: true },
         message: { type: String, required: true },
         attendance: { type: Number, required: true },
-        year: { type: String, required: true },
+        academicYear: { type: String, required: true }, // user input year
+        excelYear: { type: String, required: true },    // year from Excel
         section: { type: String, required: true },
         sid: { type: String },
         status: { type: String, enum: ["pending", "sent", "failed"], default: "pending" },
@@ -19,4 +20,5 @@ const smsSchema = new mongoose.Schema(
 );
 
 const Sms = mongoose.model("Sms", smsSchema);
-export default Sms;
+
+export default Sms; // ✅ default export

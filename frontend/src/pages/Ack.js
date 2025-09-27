@@ -11,6 +11,7 @@ const Ack = () => {
     const { smsId } = useParams();
     const [status, setStatus] = useState("Processing acknowledgment...");
     const [smsData, setSmsData] = useState(null);
+    const [translatedMessage, setTranslatedMessage] = useState("");
     const [loading, setLoading] = useState(true);
 
     const { t } = useTranslation();
@@ -32,6 +33,7 @@ const Ack = () => {
 
                 if (recordRes.data.success) {
                     setSmsData(recordRes.data.data);
+                    setTranslatedMessage(recordRes.data.data.message); // default text
                 }
 
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
@@ -46,6 +48,34 @@ const Ack = () => {
 
         fetchData();
     }, [smsId, t]);
+
+    // Translate backend message when language changes
+    useEffect(() => {
+        if (!smsData?.message) return;
+
+        const translate = async () => {
+            try {
+                const lang = i18n.language;
+                if (lang === "en") {
+                    setTranslatedMessage(smsData.message);
+                    return;
+                }
+
+                const res = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+                        smsData.message
+                    )}&langpair=en|${lang}`
+                );
+                const data = await res.json();
+                setTranslatedMessage(data.responseData.translatedText);
+            } catch (error) {
+                console.error("Translation error:", error);
+                setTranslatedMessage(smsData.message); // fallback
+            }
+        };
+
+        translate();
+    }, [i18n.language, smsData]);
 
     const handleDownloadPDF = () => {
         const element = receiptRef.current;
@@ -148,7 +178,8 @@ const Ack = () => {
                         alt="Logo"
                         style={{ height: "40px", width: "40px", marginRight: "10px" }}
                     />
-                    NARAYANA ENGINEERING COLLEGE GUDUR
+                    {t("collegeName")}
+
                 </div>
 
                 <h1
@@ -266,7 +297,7 @@ const Ack = () => {
                                     lineHeight: "1.5",
                                 }}
                             >
-                                {smsData.message}
+                                {translatedMessage}
                             </p>
                         </div>
                     </div>

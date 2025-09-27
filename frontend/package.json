@@ -11,6 +11,7 @@
     "ajv": "^8.0.0",
     "ajv-keywords": "^5.1.0",
     "axios": "^1.11.0",
+    "file-saver": "^2.0.5",
     "html2pdf": "^0.0.11",
     "html2pdf.js": "^0.12.0",
     "i18next": "^22.5.1",
@@ -21,7 +22,8 @@
     "react-router-dom": "^6.30.1",
     "react-scripts": "5.0.1",
     "tailwindcss": "^4.1.13",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

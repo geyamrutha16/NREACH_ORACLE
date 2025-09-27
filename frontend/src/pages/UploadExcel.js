@@ -55,7 +55,7 @@ const UploadExcel = ({ setRefresh }) => {
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("year", year);
+        formData.append("academicYear", year); // 👈 send correctly
         formData.append("fromDate", fromDate);
         formData.append("toDate", toDate);
 
@@ -201,9 +201,16 @@ const UploadExcel = ({ setRefresh }) => {
                         />
                     </div>
 
-                    {/* Year Dropdown */}
+                    {/* Year Input with Dynamic Options */}
+                    {/* Year Dropdown (no typing) */}
                     <div style={{ marginBottom: "20px" }}>
-                        <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+                        <label
+                            style={{
+                                display: "block",
+                                marginBottom: "8px",
+                                fontWeight: "600",
+                            }}
+                        >
                             Select Year:
                         </label>
                         <select
@@ -219,12 +226,18 @@ const UploadExcel = ({ setRefresh }) => {
                             }}
                         >
                             <option value="">-- Select Year --</option>
-                            <option value="I">I</option>
-                            <option value="II">II</option>
-                            <option value="III">III</option>
-                            <option value="IV">IV</option>
+                            {Array.from(
+                                { length: new Date().getFullYear() - 2022 + 1 },
+                                (_, i) => 2022 + i
+                            ).map((yr) => (
+                                <option key={yr} value={yr}>
+                                    {yr}
+                                </option>
+                            ))}
                         </select>
                     </div>
+
+
 
                     {/* From Date */}
                     <div style={{ marginBottom: "20px" }}>

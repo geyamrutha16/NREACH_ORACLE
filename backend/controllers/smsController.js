@@ -38,7 +38,7 @@ function formatPhoneNumber(num) {
 
 export const sendBulkSms = async (req, res) => {
     try {
-        const { year, fromDate, toDate } = req.body;
+        const { academicYear, fromDate, toDate } = req.body;
 
         if (!req.file) return res.status(400).json({ error: "Excel file required" });
 
@@ -53,7 +53,7 @@ export const sendBulkSms = async (req, res) => {
             const {
                 "Roll Number": RollNo,
                 Name,
-                Year,
+                Year: excelYear,
                 Section,
                 "Parent Mobile Number": Phone,
                 Attendance,
@@ -67,8 +67,8 @@ export const sendBulkSms = async (req, res) => {
                 name: Name,
                 phoneNumber: Phone,
                 attendance,
-                year,
-                section: Section,
+                year: excelYear,            // from Excel
+                academicYear, // user input
                 fromDate,
                 toDate,
                 excelName: req.file.originalname,
@@ -94,7 +94,7 @@ Dept. of CSE
 
 NReach Attendance Alert
 
-Your ward ${Name} with Roll No: ${RollNo || "N/A"} of ${Year} Year, CSE-${Section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}. 
+Your ward ${Name} with Roll No: ${RollNo || "N/A"} of ${excelYear} Year, CSE-${Section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}. 
 
 For further details, kindly contact HOD/Principal. 
 Ph: +91 81219 79628`.trim();
@@ -106,7 +106,8 @@ Ph: +91 81219 79628`.trim();
                 phoneNumber: formattedPhone,
                 message,
                 attendance,
-                year,
+                year: excelYear,             // from Excel
+                academicYear,
                 section: Section,
                 fromDate,
                 toDate,
