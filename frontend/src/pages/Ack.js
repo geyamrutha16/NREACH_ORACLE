@@ -39,18 +39,12 @@ function applyCustomReplacements(text, lang) {
 // ✅ MyMemory API translation ignoring URLs
 async function translateMessageWithMyMemory(text, targetLang) {
     if (!text) return "";
+    if (targetLang === "en") return text; // ✅ Skip translation for English
+
     const langMap = { en: "en", hi: "hi", te: "te", ta: "ta" };
     const langCode = langMap[targetLang] || "en";
 
     try {
-        // Extract URLs
-        const urls = [...text.matchAll(/https?:\/\/\S+/g)].map((m) => m[0]);
-        let textToTranslate = text;
-
-        // Replace URLs with placeholders
-        urls.forEach((url, index) => {
-            textToTranslate = textToTranslate.replace(url, `__URL_${index}__`);
-        });
 
         const response = await axios.get(
             `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
@@ -59,11 +53,6 @@ async function translateMessageWithMyMemory(text, targetLang) {
         );
 
         let translated = response.data.responseData.translatedText;
-
-        // Restore URLs
-        urls.forEach((url, index) => {
-            translated = translated.replace(`__URL_${index}__`, url);
-        });
 
         return translated;
     } catch (err) {
