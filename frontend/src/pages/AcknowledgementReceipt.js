@@ -31,75 +31,250 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="receipt-overlay">
+            <div className="receipt-backdrop" onClick={onClose}></div>
 
-            <div
-                className="absolute inset-0 bg-black/50"
-                onClick={onClose}
-            ></div>
-
-
-            <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-xl p-6 z-10">
-
+            <div className="receipt-container">
                 <button
                     onClick={onClose}
-                    className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                    className="receipt-close-btn"
                 >
                     ×
                 </button>
 
-                <h1 className="text-2xl font-bold text-center text-blue-700">
+                <h1 className="receipt-heading">
                     📜 Acknowledgement Receipt
                 </h1>
 
-
                 <div
                     ref={receiptRef}
-                    className="bg-white p-6 mt-4 rounded-lg border border-gray-200"
+                    className="receipt-content"
                 >
-                    <p className="text-lg text-gray-800 mb-4">
-                        <strong>Roll No:</strong> {sms.rollNo || "N/A"} <br />
-                        <strong>Attendance:</strong> {sms.attendance || "N/A"}% <br />
-                        <strong>Mobile No:</strong> {sms.phoneNumber} <br />
-                        <strong>Date:</strong>{" "}
-                        {new Date(sms.createdAt).toLocaleDateString()} <br />
-                        <strong>Time:</strong>{" "}
-                        {new Date(sms.createdAt).toLocaleTimeString()}
-                    </p>
-
-
-                    <div className="flex justify-between mt-10">
-                        <div className="text-center">
-                            <img
-                                src={HOD_SIGN}
-                                alt="HOD Signature"
-                                className="h-16 mx-auto"
-                            />
-                            <p className="mt-2 text-gray-700 font-medium">HOD</p>
+                    <div className="receipt-details">
+                        <div className="detail-item">
+                            <strong>Roll No:</strong> {sms.rollNo || "N/A"}
                         </div>
-
-                        <div className="text-center">
-                            <img
-                                src={PRINCIPAL_SIGN}
-                                alt="Principal Signature"
-                                className="h-16 mx-auto"
-                            />
-                            <p className="mt-2 text-gray-700 font-medium">Principal</p>
+                        <div className="detail-item">
+                            <strong>Attendance:</strong> {sms.attendance || "N/A"}%
+                        </div>
+                        <div className="detail-item">
+                            <strong>Mobile No:</strong> {sms.phoneNumber}
+                        </div>
+                        <div className="detail-item">
+                            <strong>Date:</strong> {new Date(sms.createdAt).toLocaleDateString()}
+                        </div>
+                        <div className="detail-item">
+                            <strong>Time:</strong> {new Date(sms.createdAt).toLocaleTimeString()}
                         </div>
                     </div>
 
+                    <div className="signatures-section">
+                        <div className="signature-item">
+                            <img
+                                src={HOD_SIGN}
+                                alt="HOD Signature"
+                                className="signature-image"
+                            />
+                            <p className="signature-label">HOD</p>
+                        </div>
+
+                        <div className="signature-item">
+                            <img
+                                src={PRINCIPAL_SIGN}
+                                alt="Principal Signature"
+                                className="signature-image"
+                            />
+                            <p className="signature-label">Principal</p>
+                        </div>
+                    </div>
                 </div>
 
-
-                <div className="mt-6 flex justify-end">
+                <div className="download-section">
                     <button
                         onClick={handleDownload}
-                        className="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition"
+                        className="download-btn"
                     >
                         Download PDF
                     </button>
                 </div>
             </div>
+
+            <style jsx>{`
+                .receipt-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 50;
+                    padding: 16px;
+                }
+
+                .receipt-backdrop {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+
+                .receipt-container {
+                    position: relative;
+                    width: 100%;
+                    max-width: 600px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                    padding: 24px;
+                    z-index: 10;
+                    margin: 0 auto;
+                }
+
+                .receipt-close-btn {
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    color: #6b7280;
+                    font-size: 24px;
+                    font-weight: bold;
+                    background: white;
+                    border-radius: 50%;
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .receipt-close-btn:hover {
+                    color: #374151;
+                }
+
+                .receipt-heading {
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-align: center;
+                    color: #1e3a8a;
+                    margin-bottom: 16px;
+                    word-wrap: break-word;
+                    padding: 0 8px;
+                }
+
+                .receipt-content {
+                    background: white;
+                    padding: 16px;
+                    margin-top: 16px;
+                    border-radius: 8px;
+                    border: 1px solid #e5e7eb;
+                }
+
+                .receipt-details {
+                    margin-bottom: 16px;
+                }
+
+                .detail-item {
+                    font-size: 16px;
+                    margin-bottom: 8px;
+                    color: #374151;
+                }
+
+                .signatures-section {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 32px;
+                    gap: 24px;
+                }
+
+                .signature-item {
+                    text-align: center;
+                }
+
+                .signature-image {
+                    height: 64px;
+                    margin: 0 auto;
+                }
+
+                .signature-label {
+                    margin-top: 8px;
+                    color: #374151;
+                    font-weight: 500;
+                }
+
+                .download-section {
+                    margin-top: 24px;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .download-btn {
+                    padding: 12px 20px;
+                    background-color: #16a34a;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    cursor: pointer;
+                    font-size: 16px;
+                    width: 100%;
+                    max-width: 200px;
+                }
+
+                .download-btn:hover {
+                    background-color: #15803d;
+                }
+
+                /* Tablet and larger screens */
+                @media (min-width: 640px) {
+                    .receipt-container {
+                        padding: 24px;
+                    }
+
+                    .receipt-close-btn {
+                        top: 16px;
+                        right: 16px;
+                    }
+
+                    .receipt-heading {
+                        font-size: 28px;
+                    }
+
+                    .receipt-content {
+                        padding: 24px;
+                    }
+
+                    .signatures-section {
+                        flex-direction: row;
+                        gap: 0;
+                    }
+
+                    .signature-image {
+                        height: 80px;
+                    }
+
+                    .download-btn {
+                        width: auto;
+                    }
+                }
+
+                /* Desktop screens */
+                @media (min-width: 1024px) {
+                    .receipt-heading {
+                        font-size: 32px;
+                    }
+
+                    .detail-item {
+                        font-size: 18px;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

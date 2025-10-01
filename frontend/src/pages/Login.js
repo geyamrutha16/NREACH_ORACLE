@@ -37,52 +37,99 @@ function Login() {
 
     return (
         <div
-            style={{
-                height: "100vh",
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                backgroundImage: `url(${bg})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                paddingRight: "60px",
-            }}
+            className="login-container"
+            style={{ backgroundImage: `url(${bg})` }}
         >
-            <div
-                style={{
-                    width: "350px",
-                    padding: "40px",
-                    background: "#fff",
-                    borderRadius: "12px",
-                    boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-                    textAlign: "center",
-                }}
-            >
-                <div style={{ width: "100%", background: "#fff" }}>
+            {/* Internal styles for responsiveness */}
+            <style>
+                {`
+          .login-container {
+            height: 100vh;
+            display: flex;
+            justify-content: flex-end; /* Default right aligned */
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            padding-right: 60px;
+          }
+
+          .login-box {
+            width: 350px;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+          }
+
+          .logo-container img {
+            width: 90%;
+            height: 100px;
+            object-fit: cover;
+          }
+
+          .login-title {
+            margin-bottom: 30px;
+            color: #333;
+          }
+
+          .error-text {
+            color: red;
+          }
+
+          .login-form input {
+            width: 90%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+          }
+
+          .login-form button {
+            width: 95%;
+            padding: 12px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s ease;
+          }
+
+          .login-form button:disabled {
+            background: #999;
+            cursor: not-allowed;
+          }
+
+          /* ✅ Mobile view override */
+          @media (max-width: 768px) {
+            .login-container {
+              justify-content: center; /* Center on mobile */
+              padding-right: 0;
+              padding: 20px;
+            }
+        `}
+            </style>
+
+            <div className="login-box">
+                <div className="logo-container">
                     <img
                         src="https://th.bing.com/th/id/R.99f5013bf6aa4aea7096f521010231d6?rik=qJ2wQR794YxEFw&riu=http%3a%2f%2fwww.necg.ac.in%2fimages%2flogo-new.png&ehk=34uOcsZyguHwG4u8oCBwaFUQ4AA6SlHmamc2ZTqFLrU%3d&risl=&pid=ImgRaw&r=0"
                         alt="Narayana Engineering College"
-                        style={{ width: "90%", height: "100px", objectFit: "cover" }}
                     />
                 </div>
 
-                <h1 style={{ marginBottom: "30px", color: "#333" }}>NReach</h1>
+                <h1 className="login-title">NReach</h1>
 
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p className="error-text">{error}</p>}
 
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleLogin} className="login-form">
                     <input
                         type="text"
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        style={{
-                            width: "90%",
-                            padding: "12px",
-                            marginBottom: "15px",
-                            borderRadius: "8px",
-                            border: "1px solid #ccc",
-                        }}
                         disabled={loading}
                     />
                     <input
@@ -90,29 +137,9 @@ function Login() {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        style={{
-                            width: "90%",
-                            padding: "12px",
-                            marginBottom: "10px",
-                            borderRadius: "8px",
-                            border: "1px solid #ccc",
-                        }}
                         disabled={loading}
                     />
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        style={{
-                            width: "95%",
-                            padding: "12px",
-                            background: loading ? "#999" : "#667eea",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: loading ? "not-allowed" : "pointer",
-                            fontWeight: "bold",
-                        }}
-                    >
+                    <button type="submit" disabled={loading}>
                         {loading ? "Processing..." : "Login"}
                     </button>
                 </form>

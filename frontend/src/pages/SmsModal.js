@@ -97,22 +97,37 @@ const SmsModal = ({ sms, onClose }) => {
                         Acknowledgement Receipt
                     </h2>
 
-
                     <hr style={{ marginBottom: "25px", borderColor: "#ddd" }} />
 
-                    <div style={{ lineHeight: "1.8", textAlign: "left", marginBottom: "40px" }}>
-                        <p>
-                            This is to acknowledge that your ward{" "}
-                            <strong>{sms?.name}</strong> with RollNo{" "}
-                            <strong>{sms?.rollNo}</strong> attendance report has been successfully sent
-                            to the mobile number <strong>{sms?.phoneNumber}</strong> on{" "}
-                            <strong>
-                                {sms?.createdAt ? new Date(sms.createdAt).toLocaleString() : "N/A"}
-                            </strong>.
-                        </p>
+                    <div
+                        style={{
+                            lineHeight: "1.8",
+                            textAlign: "left",
+                            marginBottom: "40px",
+                        }}
+                    >
+                        {sms?.status === "sent" ? (
+                            <p>
+                                This is to acknowledge that your ward{" "}
+                                <strong>{sms?.name}</strong> with RollNo{" "}
+                                <strong>{sms?.rollNo}</strong> attendance report has been
+                                successfully sent to the mobile number{" "}
+                                <strong>{sms?.phoneNumber}</strong> on{" "}
+                                <strong>
+                                    {sms?.createdAt
+                                        ? new Date(sms.createdAt).toLocaleString()
+                                        : "N/A"}
+                                </strong>
+                                .
+                            </p>
+                        ) : (
+                            <p>
+                                Attendance report for <strong>{sms?.name}</strong> could not
+                                be sent. Please try again.
+                            </p>
+                        )}
                     </div>
 
-                    {/* Signatures */}
                     <div
                         style={{
                             display: "flex",
@@ -137,7 +152,7 @@ const SmsModal = ({ sms, onClose }) => {
                                 src={PRINCIPAL_SIGN}
                                 alt="Principal Signature"
                                 className="h-16 mx-auto"
-                                width="80px" q
+                                width="80px"
                                 height="100px"
                             />
                             <p className="text-gray-700 font-medium">Principal</p>
@@ -145,7 +160,14 @@ const SmsModal = ({ sms, onClose }) => {
                     </div>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "15px", marginTop: "30px" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: "15px",
+                        marginTop: "30px",
+                    }}
+                >
                     <button
                         onClick={handleDownload}
                         style={{
@@ -160,7 +182,6 @@ const SmsModal = ({ sms, onClose }) => {
                     >
                         Download Ack
                     </button>
-
                 </div>
             </div>
         </div>

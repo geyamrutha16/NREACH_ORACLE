@@ -39,7 +39,7 @@ function applyCustomReplacements(text, lang) {
 // ✅ MyMemory API translation ignoring URLs
 async function translateMessageWithMyMemory(text, targetLang) {
     if (!text) return "";
-    if (targetLang === "en") return text; // ✅ Skip translation for English
+    if (targetLang === "te") return text; // ✅ Skip translation for English
 
     const langMap = { en: "en", hi: "hi", te: "te", ta: "ta" };
     const langCode = langMap[targetLang] || "en";
