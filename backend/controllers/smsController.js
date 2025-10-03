@@ -103,19 +103,34 @@ export const sendBulkSms = async (req, res) => {
                 const ackLink = `${process.env.FRONTEND_URL}/ack/`;
 
                 // Attendance status
+                let statusIcon = "";
                 let statusText = "";
-                if (attendance < 50) statusText = "Very low attendance!";
-                else if (attendance < 65) statusText = "Attendance not good!";
-                else if (attendance < 75) statusText = "Average attendance";
-                else statusText = "Good attendance";
+                if (attendance < 50) {
+                    statusIcon = "🔴";
+                    statusText = "Very low attendance!";
+                } else if (attendance < 65) {
+                    statusIcon = "🟡";
+                    statusText = "Attendance is not good!";
+                } else if (attendance < 75) {
+                    statusIcon = "🟢";
+                    statusText = "Average attendance";
+                } else {
+                    statusIcon = "✅";
+                    statusText = "Good attendance";
+                }
 
                 // Message body
                 const message =
                     `Narayana Engineering College, Gudur
+
 NReach Attendance Alert
+
 Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}.
-${statusText}
+
+${statusIcon} - ${statusText}
+
 For further details, kindly contact Head of the Department / Principal. Ph: +91 81219 79628
+
 Please acknowledge: ${ackLink}`.trim();
 
                 console.log("✉️ SMS Body Preview:\n", message);

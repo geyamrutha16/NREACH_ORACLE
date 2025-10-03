@@ -69,7 +69,7 @@ const Ack = () => {
     const [translatedMessage, setTranslatedMessage] = useState("");
 
     const { t } = useTranslation();
-    const receiptRef = useRef();
+    const messageRef = useRef();
     const currentLang = i18n.language;
 
     useEffect(() => {
@@ -181,7 +181,7 @@ const Ack = () => {
                     marginBottom: "10px",
                 }}
             >
-                <VoiceAgent targetRef={receiptRef} />
+                <VoiceAgent targetRef={messageRef} />
                 <select
                     onChange={(e) => i18n.changeLanguage(e.target.value)}
                     value={i18n.language}
@@ -337,6 +337,7 @@ const Ack = () => {
 
                         {/* Sent Message */}
                         <div
+                            ref={messageRef}
                             style={{
                                 marginTop: "1.5rem",
                                 padding: "1rem",
@@ -356,6 +357,7 @@ const Ack = () => {
                                 {translatedMessage}
                             </p>
                         </div>
+
                     </div>
                 )}
 
