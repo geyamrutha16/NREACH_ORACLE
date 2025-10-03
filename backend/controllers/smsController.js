@@ -69,34 +69,30 @@ export const sendBulkSms = async (req, res) => {
             const phone = row["Parent Mobile Number"] || row["Phone"] || "";
             const attendance = Number(row["Attendance"] || 0);
 
+            // Attendance filter
             if (attendanceThreshold !== null && attendance >= attendanceThreshold) {
-                console.log(`⏩ Skipped due to attendance >= threshold: ${attendance}% >= ${attendanceThreshold}%`);
+                console.log(`⏩ Skipped: Attendance ${attendance}% >= ${attendanceThreshold}%`);
                 skippedRecords.push({ row: index + 2, name, phone, reason: `Attendance >= ${attendanceThreshold}%` });
                 continue;
             }
 
+            // Save upload record
             try {
                 const uploadRecord = await new Upload({
-                    rollNo,
-                    name,
-                    phoneNumber: phone,
-                    attendance,
-                    year: excelYear,
-                    section,
-                    department,
-                    fromDate,
-                    toDate,
-                    excelName: req.file.originalname,
-                    academicYear,
+                    rollNo, name, phoneNumber: phone, attendance,
+                    year: excelYear, section, department,
+                    fromDate, toDate, excelName: req.file.originalname, academicYear,
                 }).save();
                 console.log("✅ Upload record saved:", uploadRecord._id);
             } catch (uploadErr) {
-                console.error("❌ Failed to save Upload record:", uploadErr.message);
+                console.error("❌ Upload save failed:", uploadErr);
                 skippedRecords.push({ row: index + 2, name, phone, reason: `Upload save error: ${uploadErr.message}` });
                 continue;
             }
 
+            // Format phone
             const formattedPhone = formatPhoneNumber(phone);
+            console.log("📞 Original phone:", phone, "➡️ Formatted:", formattedPhone);
             if (!formattedPhone) {
                 console.warn(`⚠ Invalid phone format: ${phone}`);
                 skippedRecords.push({ row: index + 2, name, phone, reason: "Invalid phone format" });
@@ -106,47 +102,29 @@ export const sendBulkSms = async (req, res) => {
             try {
                 const ackLink = `${process.env.FRONTEND_URL}/ack/`;
 
-                // Attendance status logic (English only)
-                let statusIcon = "";
+                // Attendance status
                 let statusText = "";
+                if (attendance < 50) statusText = "Very low attendance!";
+                else if (attendance < 65) statusText = "Attendance not good!";
+                else if (attendance < 75) statusText = "Average attendance";
+                else statusText = "Good attendance";
 
-                if (attendance < 50) {
-                    statusIcon = "🔴";
-                    statusText = "Very low attendance!";
-                } else if (attendance < 65) {
-                    statusIcon = "🟡";
-                    statusText = "Attendance not good!";
-                } else if (attendance < 75) {
-                    statusIcon = "🟢";
-                    statusText = "Average attendance";
-                } else {
-                    statusIcon = "✅";
-                    statusText = "Good attendance";
-                }
+                // Message body
+                const message =
+                    `Narayana Engineering College, Gudur
+NReach Attendance Alert
+Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}.
+${statusText}
+For further details, kindly contact Head of the Department / Principal. Ph: +91 81219 79628
+Please acknowledge: ${ackLink}`.trim();
 
-                // Construct short SMS message (English)
-                const message = `
-Narayana Engineering College, Gudur
-${name} (${rollNo || "N/A"}), ${excelYear} - ${section || "N/A"} Attendance: ${attendance}%
-${statusIcon} ${statusText}
-Acknowledge here: ${ackLink}
-`.trim();
+                console.log("✉️ SMS Body Preview:\n", message);
 
-                // Save SMS record
+                // Save initial SMS record
                 let smsRecord = await new Sms({
-                    rollNo,
-                    name,
-                    phoneNumber: formattedPhone,
-                    message,
-                    attendance,
-                    year: excelYear,
-                    section,
-                    department,
-                    fromDate,
-                    toDate,
-                    academicYear,
-                    smsSent: false,
-                    status: "pending",
+                    rollNo, name, phoneNumber: formattedPhone, message, attendance,
+                    year: excelYear, section, department, fromDate, toDate, academicYear,
+                    smsSent: false, status: "pending",
                 }).save();
 
                 smsRecord.ackLink = `${process.env.FRONTEND_URL}/ack/${smsRecord._id}`;
@@ -156,33 +134,54 @@ Acknowledge here: ${ackLink}
 
                 // Send SMS via Twilio
                 try {
+                    console.log(`📡 Sending SMS via Twilio... To: ${formattedPhone}, From: ${twilioPhone}`);
                     const twilioMsg = await client.messages.create({
                         body: `${smsRecord.message}\n\nPlease acknowledge: ${smsRecord.ackLink}`,
                         to: formattedPhone,
                         from: twilioPhone,
                     });
 
+                    console.log("📦 Twilio Response:", {
+                        sid: twilioMsg.sid,
+                        status: twilioMsg.status,
+                        errorCode: twilioMsg.errorCode,
+                        errorMessage: twilioMsg.errorMessage
+                    });
+
                     smsRecord.sid = twilioMsg.sid;
-                    smsRecord.status = "sent";
+                    smsRecord.status = twilioMsg.status || "sent";
                     smsRecord.smsSent = true;
                     await smsRecord.save();
                     console.log(`📤 SMS sent successfully to ${formattedPhone}, SID: ${twilioMsg.sid}`);
+
+                    // Optional: fetch status again after few seconds
+                    setTimeout(async () => {
+                        try {
+                            const checkStatus = await client.messages(twilioMsg.sid).fetch();
+                            console.log(`🔍 Delivery Status for ${formattedPhone}:`, checkStatus.status);
+                            smsRecord.status = checkStatus.status;
+                            await smsRecord.save();
+                        } catch (statusErr) {
+                            console.error("⚠ Failed to fetch delivery status:", statusErr.message);
+                        }
+                    }, 5000);
+
                     sentRecords.push(smsRecord);
 
                 } catch (twilioErr) {
-                    console.error(`❌ Twilio SMS failed for ${formattedPhone}:`, twilioErr.message);
+                    console.error(`❌ Twilio send failed for ${formattedPhone}:`, twilioErr);
                     smsRecord.status = "failed";
                     await smsRecord.save();
                     skippedRecords.push({ name, phone: formattedPhone, reason: `Twilio error: ${twilioErr.message}` });
                 }
 
             } catch (rowErr) {
-                console.error(`❌ SMS row processing failed for ${name}:`, rowErr.message);
+                console.error(`❌ Row processing failed for ${name}:`, rowErr);
                 skippedRecords.push({ row: index + 2, name, phone, reason: `Row error: ${rowErr.message}` });
             }
         }
 
-        console.log("\n📊 Summary:");
+        console.log("\n📊 Final Summary:");
         console.log("✅ Sent records:", sentRecords.length);
         console.log("⏩ Skipped records:", skippedRecords.length);
 
@@ -195,10 +194,11 @@ Acknowledge here: ${ackLink}
         });
 
     } catch (err) {
-        console.error("❌ sendBulkSms API error:", err.message, err.stack);
+        console.error("❌ sendBulkSms API error:", err);
         res.status(500).json({ error: err.message });
     }
 };
+
 /*
 export const sendBulkSms = async (req, res) => {
     console.log("🚀 Entered sendBulkSms API");
