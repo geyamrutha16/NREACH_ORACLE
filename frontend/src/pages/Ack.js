@@ -70,6 +70,7 @@ const Ack = () => {
 
     const { t } = useTranslation();
     const messageRef = useRef();
+    const receiptRef = useRef();
     const currentLang = i18n.language;
 
     useEffect(() => {
