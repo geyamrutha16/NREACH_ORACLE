@@ -17,7 +17,6 @@ const SmsTable = ({ refresh }) => {
 
     const loginRole = localStorage.getItem("role") || "operator";
 
-    // Check screen size for responsiveness
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener("resize", handleResize);

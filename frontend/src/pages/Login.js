@@ -40,7 +40,6 @@ function Login() {
             className="login-container"
             style={{ backgroundImage: `url(${bg})` }}
         >
-            {/* Internal styles for responsiveness */}
             <style>
                 {`
           .login-container {

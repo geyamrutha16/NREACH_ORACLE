@@ -24,7 +24,13 @@ const resources = {
             downloadAckReceipt: "📥 Download Acknowledgment Receipt",
             statusSent: "Sent",
             statusPending: "Pending",
-            loading: "Loading...", // ✅ Added
+            loading: "Loading...",
+            A: "A",
+            B: "B",
+            C: "C",
+            D: "D",
+            E: "E",
+            CSM: "CSM",
         },
     },
     te: {
@@ -49,7 +55,13 @@ const resources = {
             downloadAckReceipt: "📥 అంగీకార రశీదు డౌన్‌లోడ్ చేయండి",
             statusSent: "పంపబడింది",
             statusPending: "పెండింగ్",
-            loading: "లోడ్ అవుతుంది...", // ✅ Added
+            loading: "లోడ్ అవుతుంది...",
+            A: "ఎ",
+            B: "బి",
+            C: "సి",
+            D: "డి",
+            E: "ఈ",
+            CSM: "సీఎస్ఎం",
         },
     },
     hi: {
@@ -74,7 +86,13 @@ const resources = {
             downloadAckReceipt: "📥 प्राप्ति रसीद डाउनलोड करें",
             statusSent: "भेजा गया",
             statusPending: "लंबित",
-            loading: "लोड हो रहा है...", // ✅ Added
+            loading: "लोड हो रहा है...",
+            A: "ए",
+            B: "बी",
+            C: "सी",
+            D: "डी",
+            E: "ई",
+            CSM: "सीएसएम",
         },
     },
     ta: {
@@ -99,7 +117,13 @@ const resources = {
             downloadAckReceipt: "📥 ஒப்புதல் ரசீதை பதிவிறக்கவும்",
             statusSent: "அனுப்பப்பட்டது",
             statusPending: "நிலுவையில்",
-            loading: "ஏற்றுகிறது...", // ✅ Added
+            loading: "ஏற்றுகிறது...",
+            A: "ஏ",
+            B: "பி",
+            C: "சி",
+            D: "டி",
+            E: "ஈ",
+            CSM: "சிஎஸ்எம்",
         },
     },
 };
@@ -107,7 +131,7 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: "en", // default
+    lng: "te",
     fallbackLng: "en",
     interpolation: { escapeValue: false },
 });

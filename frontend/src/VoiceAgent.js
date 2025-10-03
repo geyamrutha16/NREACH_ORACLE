@@ -38,6 +38,8 @@ const VoiceAgent = ({ targetRef }) => {
 
         text = removeEmojis(text);
 
+        text = text.replace(/https?:\/\/[^\s]+/g, "link");
+
         if (speaking) {
             window.speechSynthesis.cancel();
             setSpeaking(false);

@@ -7,7 +7,6 @@ import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import VoiceAgent from "../VoiceAgent";
 
-// 🔄 Custom replacements for acronyms
 const customTranslations = {
     te: {
         CSE: "సిఎస్‌ఇ",
@@ -36,13 +35,14 @@ function applyCustomReplacements(text, lang) {
     return result;
 }
 
-// ✅ MyMemory API translation ignoring URLs
 async function translateMessageWithMyMemory(text, targetLang) {
     if (!text) return "";
-    if (targetLang === "en") return text; // ✅ Skip translation for English
+    if (targetLang === "en") return text;
+
 
     const langMap = { en: "en", hi: "hi", te: "te", ta: "ta" };
-    const langCode = langMap[targetLang] || "en";
+    const langCode = langMap[targetLang.slice(0, 2)] || "en";
+
 
     try {
 
@@ -57,7 +57,7 @@ async function translateMessageWithMyMemory(text, targetLang) {
         return translated;
     } catch (err) {
         console.error("Translation error:", err);
-        return text; // fallback
+        return text;
     }
 }
 
@@ -67,6 +67,8 @@ const Ack = () => {
     const [smsData, setSmsData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [translatedMessage, setTranslatedMessage] = useState("");
+    const [translatedName, setTranslatedName] = useState("");
+
 
     const { t } = useTranslation();
     const messageRef = useRef();
@@ -78,7 +80,6 @@ const Ack = () => {
             try {
                 setLoading(true);
 
-                // ✅ Get acknowledgment status
                 const ackRes = await axios.get(
                     `https://nreach-data.onrender.com/api/sms/ack/${smsId}`
                 );
@@ -88,7 +89,6 @@ const Ack = () => {
                         : ackRes.data.message
                 );
 
-                // ✅ Get SMS record
                 const recordRes = await axios.get(
                     `https://nreach-data.onrender.com/api/sms/record/${smsId}`
                 );
@@ -96,15 +96,16 @@ const Ack = () => {
                 if (recordRes.data.success) {
                     setSmsData(recordRes.data.data);
 
-                    // ✅ Translate message ignoring URLs + custom replacements
                     const translated = await translateMessageWithMyMemory(
                         recordRes.data.data.message,
                         currentLang
                     );
                     setTranslatedMessage(applyCustomReplacements(translated, currentLang));
+
+                    const translatedNm = await translateMessageWithMyMemory(recordRes.data.data.name, currentLang);
+                    setTranslatedName(translatedNm);
                 }
 
-                // Dispatch event
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
                 window.dispatchEvent(event);
             } catch (err) {
@@ -212,7 +213,6 @@ const Ack = () => {
                 }}
                 ref={receiptRef}
             >
-                {/* College Logo + Name */}
                 <div
                     style={{
                         display: "flex",
@@ -234,7 +234,6 @@ const Ack = () => {
                     {t("collegeName")}
                 </div>
 
-                {/* Acknowledgment Status */}
                 <h1
                     style={{
                         fontSize: "1.4rem",
@@ -250,7 +249,6 @@ const Ack = () => {
                     {status}
                 </h1>
 
-                {/* SMS Details */}
                 {smsData && (
                     <div
                         style={{
@@ -279,16 +277,16 @@ const Ack = () => {
                             }}
                         >
                             <div>
-                                <strong>{t("name")}:</strong> {smsData.name}
+                                <strong>{t("name")}:</strong> {translatedName}
                             </div>
                             <div>
                                 <strong>{t("rollNumber")}:</strong> {smsData.rollNo}
                             </div>
                             <div>
-                                <strong>{t("year")}:</strong> {smsData.year}
+                                <strong>{t("year")}:</strong> {t(smsData.year)}
                             </div>
                             <div>
-                                <strong>{t("section")}:</strong> {smsData.section}
+                                <strong>{t("section")}:</strong> {t(smsData.section)}
                             </div>
                             <div>
                                 <strong>{t("phoneNumber")}:</strong>{" "}
@@ -321,7 +319,6 @@ const Ack = () => {
                             </div>
                         </div>
 
-                        {/* Attendance Period */}
                         {smsData.fromDate && smsData.toDate && (
                             <div
                                 style={{
@@ -336,7 +333,6 @@ const Ack = () => {
                             </div>
                         )}
 
-                        {/* Sent Message */}
                         <div
                             ref={messageRef}
                             style={{
@@ -362,7 +358,6 @@ const Ack = () => {
                     </div>
                 )}
 
-                {/* Download Receipt */}
                 {smsData && (
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
                         <button
