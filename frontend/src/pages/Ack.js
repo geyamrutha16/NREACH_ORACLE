@@ -104,6 +104,12 @@ const Ack = () => {
 
                     const translatedNm = await translateMessageWithMyMemory(recordRes.data.data.name, currentLang);
                     setTranslatedName(translatedNm);
+                    const normalizedName = Array.isArray(translatedNm)
+                        ? translatedNm.join("")
+                        : translatedNm?.toString().trim();
+
+                    setTranslatedName(normalizedName);
+
                 }
 
                 const event = new CustomEvent("smsAcknowledged", { detail: smsId });
