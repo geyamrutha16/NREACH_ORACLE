@@ -155,7 +155,7 @@ const Ack = () => {
                         style={{
                             fontSize: "1.5rem",
                             fontWeight: "bold",
-                            color: "#3B82F6",
+                            color: "#002147",
                         }}
                     >
                         ⏳ {t("loading")}
@@ -363,7 +363,7 @@ const Ack = () => {
                         <button
                             onClick={handleDownloadPDF}
                             style={{
-                                background: "#3B82F6",
+                                background: "#002147",
                                 color: "#fff",
                                 padding: "0.75rem 1.5rem",
                                 border: "none",

@@ -114,19 +114,19 @@ export const sendBulkSms = async (req, res) => {
                     statusIcon = "✅";
                     statusText = "Good attendance";
                 }
-
+                /*
                 const message =
                     `Narayana Engineering College, Gudur
-
 NReach Attendance Alert
-
 Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}.
-
 ${statusIcon} - ${statusText}
 
 For further details, kindly contact HOD or Principal. Ph: +91 81219 79628
-
 Please acknowledge: ${ackLink}`.trim();
+*/
+                7989590746
+                const message =
+                    `hello`.trim();
 
                 console.log("✉️ SMS Body Preview:\n", message);
 

@@ -166,7 +166,7 @@ const UploadExcel = ({ setRefresh, user }) => {
                 {`@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}
             </style>
 
-            <div style={{ background: "#f9fafb", color: "#000", padding: "30px", borderRadius: "12px", maxWidth: "600px", margin: "10px auto", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+            <div style={{ background: "white", color: "#000", padding: "30px", borderRadius: "12px", maxWidth: "80%", margin: "10px auto", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                 <h2 style={{ marginBottom: "15px", fontWeight: "700" }}>📤 Upload Attendance Report</h2>
                 <form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
                     <div style={{ marginBottom: "20px" }}>

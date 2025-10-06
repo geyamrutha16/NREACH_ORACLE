@@ -3,6 +3,7 @@ import SmsTable from "./SmsTable";
 import UploadExcel from "./UploadExcel";
 import icon from './logo.png';
 import axios from "axios";
+import background from './BACKGROUND.png';
 
 const Home = () => {
     const [refresh, setRefresh] = useState(false);
@@ -52,7 +53,11 @@ const Home = () => {
         <div
             style={{
                 minHeight: "100vh",
-                background: "linear-gradient(135deg, #8394edff, #6366F1)",
+                //background: "linear-gradient(135deg, #2164a4, rgb(44 47 165))",
+                backgroundImage: `url(${background})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat-y",
                 color: "#fff",
                 padding: "20px",
                 position: "relative",
@@ -75,7 +80,7 @@ const Home = () => {
                                 borderRadius: "8px",
                                 border: "none",
                                 cursor: "pointer",
-                                background: activeTab === item.id ? "#10B981" : "rgba(255,255,255,0.2)",
+                                background: activeTab === item.id ? "#10B981" : "#002147",
                                 color: "#fff",
                                 fontWeight: "600",
                                 fontSize: "14px",
@@ -116,98 +121,102 @@ const Home = () => {
                 </div>
             )}
 
-            {isMobile && (
-                <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    style={{
-                        position: "fixed",
-                        top: "20px",
-                        right: "20px",
-                        background: "rgba(255,255,255,0.2)",
-                        border: "none",
-                        color: "#fff",
-                        fontSize: "24px",
-                        cursor: "pointer",
-                        padding: "10px 15px",
-                        borderRadius: "8px",
-                        zIndex: 1001,
-                        backdropFilter: "blur(10px)",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
-                    }}
-                >
-                    {isMobileMenuOpen ? "✕" : "☰"}
-                </button>
-            )}
+            {
+                isMobile && (
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        style={{
+                            position: "fixed",
+                            top: "20px",
+                            right: "20px",
+                            background: "rgba(255,255,255,0.2)",
+                            border: "none",
+                            color: "#fff",
+                            fontSize: "24px",
+                            cursor: "pointer",
+                            padding: "10px 15px",
+                            borderRadius: "8px",
+                            zIndex: 1001,
+                            backdropFilter: "blur(10px)",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+                        }}
+                    >
+                        {isMobileMenuOpen ? "✕" : "☰"}
+                    </button>
+                )
+            }
 
-            {isMobile && isMobileMenuOpen && (
-                <div style={{
-                    position: "fixed",
-                    top: "0",
-                    right: "0",
-                    bottom: "0",
-                    width: "250px",
-                    background: "rgba(30, 58, 138, 0.98)",
-                    zIndex: 1000,
-                    padding: "80px 20px 20px 20px",
-                    boxShadow: "0 0 20px rgba(0,0,0,0.3)",
-                    backdropFilter: "blur(10px)"
-                }}>
+            {
+                isMobile && isMobileMenuOpen && (
                     <div style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px"
+                        position: "fixed",
+                        top: "0",
+                        right: "0",
+                        bottom: "0",
+                        width: "250px",
+                        background: "#0194d8",
+                        zIndex: 1000,
+                        padding: "80px 20px 20px 20px",
+                        boxShadow: "0 0 20px rgba(0,0,0,0.3)",
+                        backdropFilter: "blur(10px)"
                     }}>
-                        {navItems.map((item) => (
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px"
+                        }}>
+                            {navItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => {
+                                        setActiveTab(item.id);
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    style={{
+                                        padding: "15px 20px",
+                                        borderRadius: "8px",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        background: activeTab === item.id ? "#10B981" : "#002147",
+                                        color: "#fff",
+                                        fontWeight: "600",
+                                        fontSize: "16px",
+                                        textAlign: "left",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        transition: "all 0.3s ease"
+                                    }}
+                                >
+                                    <span style={{ fontSize: "20px" }}>{item.icon}</span>
+                                    {item.label}
+                                </button>
+                            ))}
+
                             <button
-                                key={item.id}
-                                onClick={() => {
-                                    setActiveTab(item.id);
-                                    setIsMobileMenuOpen(false);
-                                }}
+                                onClick={handleLogout}
+                                disabled={logoutLoading}
                                 style={{
                                     padding: "15px 20px",
                                     borderRadius: "8px",
                                     border: "none",
-                                    cursor: "pointer",
-                                    background: activeTab === item.id ? "#10B981" : "rgba(255,255,255,0.1)",
+                                    cursor: logoutLoading ? "not-allowed" : "pointer",
+                                    background: logoutLoading ? "#999" : "#EF4444",
                                     color: "#fff",
                                     fontWeight: "600",
                                     fontSize: "16px",
-                                    textAlign: "left",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "10px",
                                     transition: "all 0.3s ease"
                                 }}
                             >
-                                <span style={{ fontSize: "20px" }}>{item.icon}</span>
-                                {item.label}
+                                {logoutLoading ? "Logging out..." : "🔒 Logout"}
                             </button>
-                        ))}
-
-                        <button
-                            onClick={handleLogout}
-                            disabled={logoutLoading}
-                            style={{
-                                padding: "15px 20px",
-                                borderRadius: "8px",
-                                border: "none",
-                                cursor: logoutLoading ? "not-allowed" : "pointer",
-                                background: logoutLoading ? "#999" : "#EF4444",
-                                color: "#fff",
-                                fontWeight: "600",
-                                fontSize: "16px",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                transition: "all 0.3s ease"
-                            }}
-                        >
-                            {logoutLoading ? "Logging out..." : "🔒 Logout"}
-                        </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             <div style={{
                 textAlign: "center",
@@ -219,7 +228,7 @@ const Home = () => {
                     <div style={{
                         marginTop: isMobile ? "60px" : "30px",
                         padding: "30px",
-                        background: "rgba(255,255,255,0.1)",
+                        background: "#002147",
                         borderRadius: "20px",
                         backdropFilter: "blur(10px)",
                         boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
@@ -231,7 +240,9 @@ const Home = () => {
                         <div style={{
                             display: "flex",
                             justifyContent: "center",
-                            flex: "0 0 auto"
+                            flex: "0 0 auto",
+                            backgroundColor: "#002147",
+
                         }}>
                             <div style={{
                                 width: isMobile ? "120px" : "180px",
@@ -315,21 +326,23 @@ const Home = () => {
                 )}
             </div>
 
-            {isMobile && isMobileMenuOpen && (
-                <div
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: "rgba(0,0,0,0.5)",
-                        zIndex: 999,
-                        cursor: "pointer"
-                    }}
-                />
-            )}
+            {
+                isMobile && isMobileMenuOpen && (
+                    <div
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                            position: "fixed",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: "rgba(0,0,0,0.5)",
+                            zIndex: 999,
+                            cursor: "pointer"
+                        }}
+                    />
+                )
+            }
 
             <style>
                 {`
@@ -344,7 +357,7 @@ const Home = () => {
                 }
                 `}
             </style>
-        </div>
+        </div >
     );
 };
 
