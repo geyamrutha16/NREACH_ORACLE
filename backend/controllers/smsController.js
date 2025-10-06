@@ -5,12 +5,7 @@ import xlsx from "xlsx";
 import dotenv from "dotenv";
 dotenv.config();
 
-//const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const client = twilio(
-    process.env.TWILIO_API_KEY,
-    process.env.TWILIO_API_SECRET,
-    { accountSid: process.env.TWILIO_ACCOUNT_SID }
-);
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 
 console.log("🔑 Account SID from:", process.env.TWILIO_ACCOUNT_SID);
