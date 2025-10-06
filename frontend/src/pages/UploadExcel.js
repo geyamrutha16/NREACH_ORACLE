@@ -53,7 +53,7 @@ const UploadExcel = ({ setRefresh, user }) => {
             return;
         }
 
-        if (new Date(toDate) == new Date(fromDate)) {
+        if (new Date(toDate) === new Date(fromDate)) {
             showNotification("End date cannot be same as start date.", "error");
             return;
         }
