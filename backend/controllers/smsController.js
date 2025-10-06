@@ -5,7 +5,12 @@ import xlsx from "xlsx";
 import dotenv from "dotenv";
 dotenv.config();
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+//const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const client = twilio(
+    process.env.TWILIO_API_KEY,
+    process.env.TWILIO_API_SECRET,
+    { accountSid: process.env.TWILIO_ACCOUNT_SID }
+);
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 
 console.log("🔑 Account SID from:", process.env.TWILIO_ACCOUNT_SID);
@@ -126,8 +131,7 @@ Please acknowledge: ${ackLink}`.trim();
 */
                 7989590746
                 const message =
-                    `Narayana Engineering College, Gudur
-Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}. ${statusIcon} - ${statusText}`.trim();
+                    `Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}. ${statusIcon} - ${statusText}`.trim();
 
                 console.log("✉️ SMS Body Preview:\n", message);
 
