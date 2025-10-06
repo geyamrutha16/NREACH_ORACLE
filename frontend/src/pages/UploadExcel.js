@@ -53,6 +53,11 @@ const UploadExcel = ({ setRefresh, user }) => {
             return;
         }
 
+        if (new Date(toDate) < new Date(fromDate)) {
+            showNotification("End date cannot be earlier than start date.", "error");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("year", year);
