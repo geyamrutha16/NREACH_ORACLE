@@ -53,6 +53,14 @@ const UploadExcel = ({ setRefresh, user }) => {
             return;
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // normalize time for comparison
+
+        if (new Date(fromDate) > today || new Date(toDate) > today) {
+            showNotification("Future dates cannot be selected.", "error");
+            return;
+        }
+
         if (new Date(toDate) === new Date(fromDate)) {
             showNotification("End date cannot be same as start date.", "error");
             return;
