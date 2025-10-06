@@ -126,7 +126,8 @@ Please acknowledge: ${ackLink}`.trim();
 */
                 7989590746
                 const message =
-                    `Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}.
+                    `Narayana Engineering College, Gudur
+                    Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}.
  `.trim();
 
                 console.log("✉️ SMS Body Preview:\n", message);
