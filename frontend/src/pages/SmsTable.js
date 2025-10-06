@@ -471,10 +471,7 @@ const SmsTable = ({ refresh }) => {
                                             <td
                                                 style={{
                                                     padding: "12px",
-                                                    color:
-                                                        sms.status === "sent"
-                                                            ? "#16A34A"
-                                                            : "#DC2626",
+                                                    color: (sms.status === "sent" || sms.status === "delivered") ? "#16A34A" : "#DC2626",
                                                     fontWeight: "600",
                                                 }}
                                             >

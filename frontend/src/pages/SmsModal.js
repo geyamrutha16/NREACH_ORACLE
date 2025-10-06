@@ -106,25 +106,17 @@ const SmsModal = ({ sms, onClose }) => {
                             marginBottom: "40px",
                         }}
                     >
-                        {sms?.status === "sent" ? (
-                            <p>
-                                This is to acknowledge that your ward{" "}
-                                <strong>{sms?.name}</strong> with RollNo{" "}
-                                <strong>{sms?.rollNo}</strong> attendance report has been
-                                successfully sent to the mobile number{" "}
-                                <strong>{sms?.phoneNumber}</strong> on{" "}
-                                <strong>
-                                    {sms?.createdAt
-                                        ? new Date(sms.createdAt).toLocaleString()
-                                        : "N/A"}
-                                </strong>
-                                .
-                            </p>
+                        {sms?.status === "sent" || sms?.status === "delivered" ? (
+                            <>
+                                This is to acknowledge that your ward <strong>{sms?.name}</strong> with RollNo <strong>{sms?.rollNo}</strong> attendance report has been
+                                successfully sent to the mobile number <strong>{sms?.phoneNumber}</strong> on <strong>
+                                    {sms?.createdAt ? new Date(sms.createdAt).toLocaleString() : "N/A"}
+                                </strong>.
+                            </>
                         ) : (
-                            <p>
-                                Attendance report for <strong>{sms?.name}</strong> could not
-                                be sent. Please try again.
-                            </p>
+                            <>
+                                Attendance report for <strong>{sms?.name}</strong> could not be sent. Please try again.
+                            </>
                         )}
                     </div>
 
