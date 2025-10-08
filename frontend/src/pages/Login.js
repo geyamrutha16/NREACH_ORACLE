@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import bg from "./BACKGROUND.png";
+import loginheader from "./login_header.png";
+import loginheaderhome from "./login_header_mobile.png";
 
 function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -42,83 +51,86 @@ function Login() {
         >
             <style>
                 {`
-          .login-container {
-            height: 100vh;
-            display: flex;
-            justify-content: flex-end; /* Default right aligned */
-            align-items: center;
-            background-size: cover;
-            background-position: center;
-            padding-right: 60px;
-          }
+                .login-container {
+                    height: 100vh;
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    background-size: cover;
+                    background-position: center;
+                    padding-right: 60px;
+                }
 
-          .login-box {
-            width: 350px;
-            padding: 40px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            text-align: center;
-          }
+                .login-box {
+                    width: 350px;
+                    padding: 40px;
+                    background: rgba(255, 255, 255, 0.9);
+                    border-radius: 12px;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                    text-align: center;
+                }
 
-          .logo-container img {
-            width: 90%;
-            height: 100px;
-            object-fit: cover;
-          }
+                .logo-container img {
+                    width: 90%;
+                    height: 100px;
+                    object-fit: cover;
+                }
 
-          .login-title {
-            margin-bottom: 30px;
-            color: #333;
-          }
+                .login-title {
+                    margin-bottom: 30px;
+                    color: #333;
+                }
 
-          .error-text {
-            color: red;
-          }
+                .error-text {
+                    color: red;
+                }
 
-          .login-form input {
-            width: 90%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-          }
+                .login-form input {
+                    width: 90%;
+                    padding: 12px;
+                    margin-bottom: 15px;
+                    border-radius: 8px;
+                    border: 1px solid #ccc;
+                }
 
-          .login-form button {
-            width: 95%;
-            padding: 12px;
-            background: #667eea;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s ease;
-          }
+                .login-form button {
+                    width: 95%;
+                    padding: 12px;
+                    background: #667eea;
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    transition: 0.3s ease;
+                }
 
-          .login-form button:disabled {
-            background: #999;
-            cursor: not-allowed;
-          }
+                .login-form button:disabled {
+                    background: #999;
+                    cursor: not-allowed;
+                }
 
-          /* ✅ Mobile view override */
-          @media (max-width: 768px) {
-            .login-container {
-              justify-content: center; /* Center on mobile */
-              padding-right: 0;
-              padding: 20px;
-            }
-        `}
+                @media (max-width: 768px) {
+                    .login-container {
+                        justify-content: center;
+                        padding: 20px;
+                    }
+                }
+                `}
             </style>
 
             <div className="login-box">
-                <div className="logo-container">
+                {isMobile ? (
                     <img
-                        src="https://th.bing.com/th/id/R.99f5013bf6aa4aea7096f521010231d6?rik=qJ2wQR794YxEFw&riu=http%3a%2f%2fwww.necg.ac.in%2fimages%2flogo-new.png&ehk=34uOcsZyguHwG4u8oCBwaFUQ4AA6SlHmamc2ZTqFLrU%3d&risl=&pid=ImgRaw&r=0"
-                        alt="Narayana Engineering College"
+                        src={loginheaderhome}
+                        alt="Narayana Engineering College Mobile"
                     />
-                </div>
-
+                ) : (
+                    <img
+                        src={loginheader}
+                        alt="Narayana Engineering College Desktop"
+                    />
+                )}
                 <h1 className="login-title">NReach</h1>
 
                 {error && <p className="error-text">{error}</p>}
