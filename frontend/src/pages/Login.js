@@ -13,6 +13,7 @@ function Login() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const navigate = useNavigate();
 
+    // ✅ Update isMobile when screen resizes
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener("resize", handleResize);
@@ -51,86 +52,85 @@ function Login() {
         >
             <style>
                 {`
-                .login-container {
-                    height: 100vh;
-                    display: flex;
-                    justify-content: flex-end;
-                    align-items: center;
-                    background-size: cover;
-                    background-position: center;
-                    padding-right: 60px;
-                }
+          .login-container {
+            height: 100vh;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            padding-right: 60px;
+          }
 
-                .login-box {
-                    width: 350px;
-                    padding: 40px;
-                    background: rgba(255, 255, 255, 0.9);
-                    border-radius: 12px;
-                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-                    text-align: center;
-                }
+          .login-box {
+            width: 350px;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+          }
 
-                .logo-container img {
-                    width: 90%;
-                    height: 100px;
-                    object-fit: cover;
-                }
+          .login-title {
+            margin-bottom: 30px;
+            color: #333;
+          }
 
-                .login-title {
-                    margin-bottom: 30px;
-                    color: #333;
-                }
+          .error-text {
+            color: red;
+          }
 
-                .error-text {
-                    color: red;
-                }
+          .login-form input {
+            width: 90%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+          }
 
-                .login-form input {
-                    width: 90%;
-                    padding: 12px;
-                    margin-bottom: 15px;
-                    border-radius: 8px;
-                    border: 1px solid #ccc;
-                }
+          .login-form button {
+            width: 95%;
+            padding: 12px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s ease;
+          }
 
-                .login-form button {
-                    width: 95%;
-                    padding: 12px;
-                    background: #667eea;
-                    color: #fff;
-                    border: none;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    transition: 0.3s ease;
-                }
+          .login-form button:disabled {
+            background: #999;
+            cursor: not-allowed;
+          }
 
-                .login-form button:disabled {
-                    background: #999;
-                    cursor: not-allowed;
-                }
-
-                @media (max-width: 768px) {
-                    .login-container {
-                        justify-content: center;
-                        padding: 20px;
-                    }
-                }
-                `}
+          /* ✅ Mobile view override */
+          @media (max-width: 768px) {
+            .login-container {
+              justify-content: center;
+              padding-right: 0;
+              padding: 20px;
+            }
+          }
+        `}
             </style>
 
             <div className="login-box">
-                {isMobile ? (
-                    <img
-                        src={loginheaderhome}
-                        alt="Narayana Engineering College Mobile"
-                    />
-                ) : (
-                    <img
-                        src={loginheader}
-                        alt="Narayana Engineering College Desktop"
-                    />
-                )}
+                <div className="logo-container">
+                    {isMobile ? (
+                        <img
+                            src={loginheaderhome}
+                            alt="Narayana Engineering College Mobile"
+                        />
+                    ) : (
+                        <img
+                            src={loginheader}
+                            alt="Narayana Engineering College Desktop"
+                        />
+                    )}
+                </div>
+
                 <h1 className="login-title">NReach</h1>
 
                 {error && <p className="error-text">{error}</p>}
