@@ -1,10 +1,12 @@
 // config/db.js
 import oracledb from 'oracledb';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const dbConfig = {
-    user: "NECG",
-    password: "password",
-    connectString: "localhost:1521/FREEPDB1"
+    user: process.env.ORACLE_USER || "system",
+    password: process.env.ORACLE_PASSWORD || "oracle",
+    connectString: process.env.ORACLE_CONNECT_STRING || "localhost/XEPDB1",
 };
 
 let connection;
