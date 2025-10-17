@@ -1,17 +1,50 @@
+// config/db.js
+import oracledb from 'oracledb';
 
-import mongoose from "mongoose";
+const dbConfig = {
+    user: "NECG",
+    password: "password",
+    connectString: "localhost:1521/FREEPDB1"
+};
+
+let connection;
 
 export const connectDB = async () => {
     try {
-        console.log(process.env.MONGO_URI);
-        const conn = await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            ssl: true,
-        });
-        console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+        connection = await oracledb.getConnection(dbConfig);
+        console.log("✅ OracleDB Connected Successfully");
+
+        // Test the connection
+        const result = await connection.execute(`SELECT 'Connection successful' FROM DUAL`);
+        console.log("🔍 Connection test:", result.rows[0][0]);
+
     } catch (err) {
-        console.error(`❌ MongoDB connection failed: ${err.message}`);
+        console.error("❌ Database connection failed:", err);
+        process.exit(1);
+    }
+}
+
+export { connection };
+/*
+import oracledb from "oracledb";
+import dotenv from "dotenv";
+dotenv.config();
+
+export let connection;
+
+export const connectDB = async () => {
+    try {
+        console.log("🔍 ENV:", process.env.ORACLE_CONNECT_STRING);
+        connection = await oracledb.getConnection({
+            user: process.env.ORACLE_USER,
+            password: process.env.ORACLE_PASSWORD,
+            connectString: process.env.ORACLE_CONNECT_STRING,
+        });
+
+        console.log("✅ OracleDB Connected Successfully");
+    } catch (err) {
+        console.error("❌ OracleDB Connection Failed:", err);
         process.exit(1);
     }
 };
+*/

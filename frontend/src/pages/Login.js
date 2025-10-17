@@ -26,14 +26,18 @@ function Login() {
         setLoading(true);
 
         try {
-            const res = await axios.post("https://nreach-data.onrender.com/api/login", {
-                username,
-                password,
+            console.log("username:", username);
+            console.log("password:", password);
+            //const res = await axios.post("https://nreach-data.onrender.com/api/login", {
+            const res = await axios.post("http://localhost:5000/api/login", {
+                username: username.trim(),
+                password: password.trim(),
             });
 
             if (res.data.success) {
+                console.log("Login response:", res.data);
                 localStorage.setItem("token", res.data.token);
-                localStorage.setItem("role", res.data.role);
+                localStorage.setItem("role", res.data.user.role);
                 navigate("/home");
             } else {
                 setError("Invalid username or password");

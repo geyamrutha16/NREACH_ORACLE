@@ -1,37 +1,71 @@
-import User from "../models/User.js";
+// controllers/authController.js
+import oracledb from 'oracledb';
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
+const dbConfig = {
+    user: "NECG",           // Use the schema that owns USERS table
+    password: "password",
+    connectString: "localhost:1521/FREEPDB1"
+};
 
 export const loginUser = async (req, res) => {
+    let connection;
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ username });
+        console.log("🔍 Login attempt:", username);
+        console.log("🔍 Login attempt:", password);
 
-        console.log("🔎 Entered:", username, password);
-        console.log("🔎 Found user:", user);
+        // Connect to OracleDB as NECG
+        connection = await oracledb.getConnection(dbConfig);
+        console.log("✅ Database connection created");
 
-        if (!user) return res.status(400).json({ success: false, message: "User not found" });
+        // Check if USERS table has the username
+        const sql = `SELECT ID, USERNAME, PASSWORD, ROLE 
+                     FROM USERS 
+                     WHERE USERNAME = :username`;
+        const result = await connection.execute(sql, [username], { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        console.log("🔎 Password match:", isMatch);
+        console.log("🔍 Query result:", result.rows);
 
-        if (!isMatch) return res.status(400).json({ success: false, message: "Password incorrect" });
+        if (result.rows.length === 0) {
+            return res.status(401).json({ success: false, message: "Invalid username or password" });
+        }
 
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const user = result.rows[0];
 
-        return res.json({ success: true, message: "Login successful", token, role: user.role });
+        const isMatch = crypto.createHash('sha256').update(password).digest('hex');
+
+        // Compare the password hash
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Invalid username or password" });
+        }
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { id: user.ID, username: user.USERNAME, role: user.ROLE },
+            process.env.JWT_SECRET || "secret_key",
+            { expiresIn: "1h" }
+        );
+
+        res.json({
+            success: true,
+            message: "Login successful",
+            token,
+            user: { id: user.ID, username: user.USERNAME, role: user.ROLE }
+        });
+
     } catch (err) {
-        console.error(err);
+        console.error("❌ loginUser error:", err);
         res.status(500).json({ success: false, message: "Server error" });
+    } finally {
+        if (connection) {
+            try { await connection.close(); } catch (err) { console.error(err); }
+        }
     }
-
 };
+
 export const logoutUser = async (req, res) => {
-    try {
-        return res.json({ success: true, message: "Logout successful" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
+    res.json({ success: true, message: "Logout successful" });
 };

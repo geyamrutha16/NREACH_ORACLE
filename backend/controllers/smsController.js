@@ -1,54 +1,45 @@
-import Sms from "../models/Sms.js";
-import Upload from "../models/Upload.js";
+import oracledb from "oracledb";
 import twilio from "twilio";
 import xlsx from "xlsx";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Twilio setup
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 
-console.log("🔑 Account SID from:", process.env.TWILIO_ACCOUNT_SID);
-console.log("🔑 Auth Token:", process.env.TWILIO_AUTH_TOKEN);
-console.log("🔑 Twilio Phone:", process.env.TWILIO_PHONE_NUMBER);
+// Oracle setup
+async function getConnection() {
+    return await oracledb.getConnection({
+        user: process.env.ORACLE_USER,
+        password: process.env.ORACLE_PASSWORD,
+        connectionString: process.env.ORACLE_CONNECTION_STRING,
+    });
+}
 
 function formatPhoneNumber(num) {
     if (!num) return null;
-
-    let phone = String(num).trim();
-
-    phone = phone.replace(/\D/g, "");
-
-    if (phone.startsWith("0")) {
-        phone = phone.substring(1);
-    }
-
-    if (!phone.startsWith("91")) {
-        phone = "91" + phone;
-    }
-
+    let phone = String(num).trim().replace(/\D/g, "");
+    if (phone.startsWith("0")) phone = phone.substring(1);
+    if (!phone.startsWith("91")) phone = "91" + phone;
     const formatted = "+" + phone;
-
     return /^\+91[6-9]\d{9}$/.test(formatted) ? formatted : null;
 }
 
 export const sendBulkSms = async (req, res) => {
     console.log("🚀 Entered sendBulkSms API");
+    let connection;
 
     try {
         const { fromDate, toDate, attendanceFilter, department, academicYear } = req.body;
         console.log("📥 Request body:", req.body);
 
-        if (!req.file) {
-            console.warn("⚠ No Excel file uploaded");
-            return res.status(400).json({ error: "Excel file required" });
-        }
+        if (!req.file) return res.status(400).json({ error: "Excel file required" });
         console.log("📄 Excel file received:", req.file.originalname);
 
         const workbook = xlsx.readFile(req.file.path);
-        const sheetName = workbook.SheetNames[0];
-        const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-        console.log(`📊 Total rows in Excel: ${sheetData.length}`);
+        const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        console.log(`📊 Total rows: ${sheetData.length}`);
 
         let sentRecords = [];
         let skippedRecords = [];
@@ -57,7 +48,8 @@ export const sendBulkSms = async (req, res) => {
         if (attendanceFilter === "<50") attendanceThreshold = 50;
         else if (attendanceFilter === "<65") attendanceThreshold = 65;
         else if (attendanceFilter === "<75") attendanceThreshold = 75;
-        console.log("🎯 Attendance threshold set to:", attendanceThreshold);
+
+        connection = await getConnection();
 
         for (let [index, row] of sheetData.entries()) {
             console.log(`\n🔹 Processing row ${index + 2}:`, row);
@@ -71,133 +63,93 @@ export const sendBulkSms = async (req, res) => {
 
             if (attendanceThreshold !== null && attendance >= attendanceThreshold) {
                 console.log(`⏩ Skipped: Attendance ${attendance}% >= ${attendanceThreshold}%`);
-                skippedRecords.push({ row: index + 2, name, phone, reason: `Attendance >= ${attendanceThreshold}%` });
+                skippedRecords.push({ name, phone, reason: `Attendance >= ${attendanceThreshold}%` });
                 continue;
             }
 
             try {
-                const uploadRecord = await new Upload({
-                    rollNo, name, phoneNumber: phone, attendance,
-                    year: excelYear, section, department,
-                    fromDate, toDate, excelName: req.file.originalname, academicYear,
-                }).save();
-                console.log("✅ Upload record saved:", uploadRecord._id);
-            } catch (uploadErr) {
-                console.error("❌ Upload save failed:", uploadErr);
-                skippedRecords.push({ row: index + 2, name, phone, reason: `Upload save error: ${uploadErr.message}` });
+                await connection.execute(
+                    `INSERT INTO UPLOADS (ROLL_NO, NAME, PHONE_NUMBER, ATTENDANCE, YEAR, SECTION, DEPARTMENT, FROM_DATE, TO_DATE, EXCEL_NAME, ACADEMIC_YEAR)
+           VALUES (:1,:2,:3,:4,:5,:6,:7,:8,:9,:10,:11)`,
+                    [rollNo, name, phone, attendance, excelYear, section, department, fromDate, toDate, req.file.originalname, academicYear],
+                    { autoCommit: true }
+                );
+            } catch (err) {
+                console.error("❌ Upload save failed:", err);
+                skippedRecords.push({ name, phone, reason: err.message });
                 continue;
             }
 
             const formattedPhone = formatPhoneNumber(phone);
-            console.log("📞 Original phone:", phone, "➡️ Formatted:", formattedPhone);
             if (!formattedPhone) {
-                console.warn(`⚠ Invalid phone format: ${phone}`);
-                skippedRecords.push({ row: index + 2, name, phone, reason: "Invalid phone format" });
+                skippedRecords.push({ name, phone, reason: "Invalid phone number" });
                 continue;
             }
 
+            const message = `
+Narayana Engineering College, Gudur
+
+Your ward ${name} (Roll No: ${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} has ${attendance}% attendance from ${fromDate} to ${toDate}.
+For more info contact HOD or Principal: +91 81219 79628`.trim();
+
+            const result = await connection.execute(
+                `INSERT INTO SMS (ROLL_NO, NAME, PHONE_NUMBER, MESSAGE, ATTENDANCE, YEAR, SECTION, DEPARTMENT, FROM_DATE, TO_DATE, ACADEMIC_YEAR, STATUS)
+         VALUES (:1,:2,:3,:4,:5,:6,:7,:8,:9,:10,:11,'pending') RETURNING ID INTO :id`,
+                {
+                    1: rollNo,
+                    2: name,
+                    3: formattedPhone,
+                    4: message,
+                    5: attendance,
+                    6: excelYear,
+                    7: section,
+                    8: department,
+                    9: fromDate,
+                    10: toDate,
+                    11: academicYear,
+                    id: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+                },
+                { autoCommit: true }
+            );
+
+            const smsId = result.outBinds.id[0];
+            const ackLink = `${process.env.FRONTEND_URL}/ack/${smsId}`;
+
+            await connection.execute(
+                `UPDATE SMS SET ACK_LINK = :ackLink WHERE ID = :id`,
+                { ackLink, id: smsId },
+                { autoCommit: true }
+            );
+
             try {
-                const ackLink = `${process.env.FRONTEND_URL}/ack/`;
+                const twilioMsg = await client.messages.create({
+                    body: `${message}\n\nPlease acknowledge: ${ackLink}`,
+                    to: formattedPhone,
+                    from: twilioPhone,
+                });
 
-                let statusIcon = "";
-                let statusText = "";
-                if (attendance < 50) {
-                    statusIcon = "🔴";
-                    statusText = "Very low attendance!";
-                } else if (attendance < 65) {
-                    statusIcon = "🟡";
-                    statusText = "Attendance is low!";
-                } else if (attendance < 75) {
-                    statusIcon = "🟢";
-                    statusText = "Average attendance";
-                } else {
-                    statusIcon = "✅";
-                    statusText = "Good attendance";
-                }
-                /*
-                const message =
-                    `Narayana Engineering College, Gudur
-NReach Attendance Alert
-Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}.
-${statusIcon} - ${statusText}
+                await connection.execute(
+                    `UPDATE SMS SET SID = :sid, STATUS = :status, SMS_SENT = 1 WHERE ID = :id`,
+                    { sid: twilioMsg.sid, status: twilioMsg.status, id: smsId },
+                    { autoCommit: true }
+                );
 
-For further details, kindly contact HOD or Principal. Ph: +91 81219 79628
-Please acknowledge: ${ackLink}`.trim();
-*/
-                7989590746
-                const message =
-                    `Narayana Engineering College, Gudur
-                    
-Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${department} - ${section || "N/A"} is having attendance of ${attendance}% from ${fromDate} to ${toDate}. For further details, kindly contact HOD or Principal. Ph: +91 81219 79628
- `.trim();
+                console.log(`📤 SMS sent successfully to ${formattedPhone}, SID: ${twilioMsg.sid}`);
+                sentRecords.push({ name, phone: formattedPhone });
 
-                console.log("✉️ SMS Body Preview:\n", message);
-
-                let smsRecord = await new Sms({
-                    rollNo, name, phoneNumber: formattedPhone, message, attendance,
-                    year: excelYear, section, department, fromDate, toDate, academicYear,
-                    smsSent: false, status: "pending",
-                }).save();
-
-                smsRecord.ackLink = `${process.env.FRONTEND_URL}/ack/${smsRecord._id}`;
-                smsRecord.message = smsRecord.message.replace(ackLink, smsRecord.ackLink);
-                await smsRecord.save();
-                console.log("📝 SMS record created:", smsRecord._id);
-
-                try {
-                    console.log(`📡 Sending SMS via Twilio... To: ${formattedPhone}, From: ${twilioPhone}`);
-                    const twilioMsg = await client.messages.create({
-                        body: `${smsRecord.message}\n\nPlease acknowledge: ${smsRecord.ackLink}`,
-                        to: formattedPhone,
-                        from: twilioPhone,
-                    });
-
-                    console.log("📦 Twilio Response:", {
-                        sid: twilioMsg.sid,
-                        status: twilioMsg.status,
-                        errorCode: twilioMsg.errorCode,
-                        errorMessage: twilioMsg.errorMessage
-                    });
-
-                    smsRecord.sid = twilioMsg.sid;
-                    smsRecord.status = twilioMsg.status || "sent";
-                    smsRecord.smsSent = true;
-                    await smsRecord.save();
-                    console.log(`📤 SMS sent successfully to ${formattedPhone}, SID: ${twilioMsg.sid}`);
-
-                    setTimeout(async () => {
-                        try {
-                            const checkStatus = await client.messages(twilioMsg.sid).fetch();
-                            console.log(`🔍 Delivery Status for ${formattedPhone}:`, checkStatus.status);
-                            smsRecord.status = checkStatus.status;
-                            await smsRecord.save();
-                        } catch (statusErr) {
-                            console.error("⚠ Failed to fetch delivery status:", statusErr.message);
-                        }
-                    }, 5000);
-
-                    sentRecords.push(smsRecord);
-
-                } catch (twilioErr) {
-                    console.error(`❌ Twilio send failed for ${formattedPhone}:`, twilioErr);
-                    smsRecord.status = "failed";
-                    await smsRecord.save();
-                    skippedRecords.push({ name, phone: formattedPhone, reason: `Twilio error: ${twilioErr.message}` });
-                }
-
-            } catch (rowErr) {
-                console.error(`❌ Row processing failed for ${name}:`, rowErr);
-                skippedRecords.push({ row: index + 2, name, phone, reason: `Row error: ${rowErr.message}` });
+            } catch (twilioErr) {
+                console.error("❌ Twilio send failed:", twilioErr);
+                await connection.execute(
+                    `UPDATE SMS SET STATUS = 'failed', ERROR_MESSAGE = :err WHERE ID = :id`,
+                    { err: twilioErr.message, id: smsId },
+                    { autoCommit: true }
+                );
+                skippedRecords.push({ name, phone: formattedPhone, reason: twilioErr.message });
             }
         }
 
-        console.log("\n📊 Final Summary:");
-        console.log("✅ Sent records:", sentRecords.length);
-        console.log("⏩ Skipped records:", skippedRecords.length);
-
         res.json({
             success: true,
-            uploaded: sentRecords.length,
             sent: sentRecords.length,
             skipped: skippedRecords.length,
             skippedRecords,
@@ -206,67 +158,77 @@ Your ward ${name} with Roll No: (${rollNo || "N/A"}) of ${excelYear} Year, ${dep
     } catch (err) {
         console.error("❌ sendBulkSms API error:", err);
         res.status(500).json({ error: err.message });
+    } finally {
+        if (connection) await connection.close();
     }
 };
 
 export const getSmsResults = async (req, res) => {
+    let connection;
     try {
-        console.log("🔍 Entered getSmsResults API");
-
-        let query = {};
+        connection = await getConnection();
         const userRole = req.user.role;
-        console.log("📝 User role:", userRole);
+        let query = "SELECT * FROM SMS";
+        let params = {};
 
         if (userRole.startsWith("hod")) {
             const dept = userRole.replace("hod-", "").toUpperCase();
-            query.department = dept;
-            console.log("📂 Filtering by department:", dept);
-        } else {
-            console.log("📂 No department filter applied (operator or other roles)");
+            query += " WHERE DEPARTMENT = :dept";
+            params.dept = dept;
         }
 
-        const sms = await Sms.find(query).sort({ createdAt: -1 });
-        console.log(`📤 Sending ${sms.length} SMS records to frontend`);
-        res.json(sms);
+        const result = await connection.execute(query, params, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        res.json(result.rows);
     } catch (err) {
-        console.error("❌ Error in getSmsResults:", err);
+        console.error("❌ getSmsResults error:", err);
         res.status(500).json({ error: err.message });
+    } finally {
+        if (connection) await connection.close();
     }
 };
 
 export const acknowledgeSms = async (req, res) => {
+    let connection;
     try {
+        connection = await getConnection();
         const smsId = req.params.smsId;
-        const sms = await Sms.findById(smsId);
-        if (!sms) return res.status(404).json({ success: false, message: "Record not found." });
+        const result = await connection.execute(
+            `UPDATE SMS SET SEEN = 1 WHERE ID = :id`,
+            { id: smsId },
+            { autoCommit: true }
+        );
 
-        sms.seen = true;
-        await sms.save();
-        res.json({ success: true, message: "Acknowledgment recorded. Thank you!", phoneNumber: sms.phoneNumber });
+        if (result.rowsAffected === 0)
+            return res.status(404).json({ success: false, message: "Record not found." });
+
+        res.json({ success: true, message: "Acknowledgment recorded!" });
     } catch (err) {
         console.error("❌ acknowledgeSms error:", err);
-        res.status(500).json({ success: false, message: "Server error" });
+        res.status(500).json({ error: err.message });
+    } finally {
+        if (connection) await connection.close();
     }
 };
 
 export const getSmsById = async (req, res) => {
+    let connection;
     try {
+        connection = await getConnection();
         const smsId = req.params.smsId;
-        console.log("📥 Fetching SMS record for ID:", smsId);
+        const result = await connection.execute(
+            `SELECT * FROM SMS WHERE ID = :id`,
+            { id: smsId },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
 
-        const sms = await Sms.findById(smsId);
-        if (!sms) {
-            console.warn("⚠️ SMS record not found for ID:", smsId);
-            return res.status(404).json({ success: false, message: "SMS record not found." });
-        }
+        if (result.rows.length === 0)
+            return res.status(404).json({ success: false, message: "SMS not found." });
 
-        console.log("✅ SMS record found:", sms);
-        res.json({
-            success: true,
-            data: sms
-        });
+        res.json({ success: true, data: result.rows[0] });
     } catch (err) {
-        console.error("❌ getSmsById error:", err.message);
-        res.status(500).json({ success: false, message: "Server error" });
+        console.error("❌ getSmsById error:", err);
+        res.status(500).json({ error: err.message });
+    } finally {
+        if (connection) await connection.close();
     }
 };

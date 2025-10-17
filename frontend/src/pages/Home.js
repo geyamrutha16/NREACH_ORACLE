@@ -16,6 +16,7 @@ const Home = () => {
     useEffect(() => {
         const storedRole = localStorage.getItem("role");
         setRole(storedRole || "");
+        console.log(localStorage.getItem("role"));
     }, []);
 
     useEffect(() => {
