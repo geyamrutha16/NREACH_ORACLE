@@ -4,9 +4,12 @@ import usePwaInstallPrompt from "./usePwaInstallPrompt";
 import Ack from "./pages/Ack";
 import Login from "./pages/Login";
 import SmsTable from "./pages/SmsTable";
+import StudentDashboard from "./pages/StudentDashboard";
+import { location } from "react-router-dom";
 
 function App() {
   const { showInstallReminder, promptInstall } = usePwaInstallPrompt();
+  const location = window.location;
 
   return (
     <Router>
@@ -46,6 +49,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/student-home" element={<StudentDashboard phone={location.state?.mobile} />} />
         <Route path="/ack/:smsId" element={<Ack />} />
         <Route path="/trackboard" element={<SmsTable />} />
         <Route path="*" element={<Login />} />

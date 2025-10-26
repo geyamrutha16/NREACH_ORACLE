@@ -52,16 +52,16 @@ const AcknowledgementReceipt = ({ sms, onClose }) => {
                 >
                     <div className="receipt-details">
                         <div className="detail-item">
-                            <strong>Roll No:</strong> {sms.rollNo || "N/A"}
+                            <strong>Roll No: </strong> {sms.rollNo || "N/A"}
                         </div>
                         <div className="detail-item">
-                            <strong>Attendance:</strong> {sms.attendance || "N/A"}%
+                            <strong>Attendance: </strong> {sms.attendance || "N/A"}%
                         </div>
                         <div className="detail-item">
-                            <strong>Mobile No:</strong> {sms.phoneNumber}
+                            <strong>Mobile No: </strong> {sms.phoneNumber}
                         </div>
                         <div className="detail-item">
-                            <strong>Date:</strong> {new Date(sms.createdAt).toLocaleDateString()}
+                            <strong>Date: </strong> {new Date(sms.createdAt).toLocaleDateString()}
                         </div>
                         <div className="detail-item">
                             <strong>Time:</strong> {new Date(sms.createdAt).toLocaleTimeString()}

@@ -310,7 +310,8 @@ const Home = () => {
                     </div>
                 )}
 
-                {activeTab === "upload" && <UploadExcel setRefresh={setRefresh} />}
+                {activeTab === "upload" && <UploadExcel setRefresh={setRefresh} user={{ username: "operator", role: "operator", department: "CSE" }} // <-- object, not string
+                />}
 
                 {activeTab === "dashboard" && (
                     <div style={{

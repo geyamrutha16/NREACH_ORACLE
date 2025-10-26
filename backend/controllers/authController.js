@@ -1,8 +1,8 @@
 // controllers/authController.js
 import oracledb from 'oracledb';
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import twilio from "twilio";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -68,6 +68,89 @@ export const loginUser = async (req, res) => {
     }
 };
 
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
+
+// Temporary OTP store
+const otpStore = {}; // { "+91xxxxxxxxxx": otp }
+
+function formatPhoneNumber(num) {
+    if (!num) return null;
+    let phone = String(num).trim().replace(/\D/g, "");
+    if (phone.startsWith("0")) phone = phone.substring(1);
+    if (!phone.startsWith("91")) phone = "91" + phone;
+    return "+" + phone;
+}
+
+// --- Send OTP ---
+export const sendOtp = async (req, res) => {
+    let { mobile } = req.body;
+    if (!mobile) return res.status(400).json({ success: false, message: "Mobile required" });
+
+    mobile = formatPhoneNumber(mobile);
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStore[mobile] = otp;
+
+    console.log(`OTP for ${mobile}: ${otp}`);
+
+    try {
+        await client.messages.create({
+            body: `Your NReach OTP is: ${otp}`,
+            from: twilioPhone,
+            to: mobile
+        });
+
+        res.json({ success: true, message: "OTP sent successfully" });
+    } catch (err) {
+        console.error("Twilio sendOtp error:", err);
+        res.status(500).json({ success: false, message: "Failed to send OTP" });
+    }
+};
+
+// --- Verify OTP ---
+export const verifyOtp = async (req, res) => {
+    let { mobile, otp } = req.body;
+    if (!mobile || !otp) return res.status(400).json({ success: false, message: "Mobile and OTP required" });
+
+    mobile = formatPhoneNumber(mobile);
+
+    if (otpStore[mobile] !== otp) {
+        return res.status(401).json({ success: false, message: "Invalid OTP" });
+    }
+
+    // ✅ Optional: fetch student from DB
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        const sql = `SELECT ID, NAME FROM STUDENTS WHERE PHONE_NUMBER = :mobile`;
+        const result = await connection.execute(sql, [mobile], { outFormat: oracledb.OUT_FORMAT_OBJECT });
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Student not found" });
+        }
+
+        const student = result.rows[0];
+
+        const token = jwt.sign(
+            { id: student.ID, mobile, role: "student" },
+            process.env.JWT_SECRET || "secret_key",
+            { expiresIn: "1h" }
+        );
+
+        delete otpStore[mobile]; // remove OTP after verification
+
+        res.json({ success: true, token, user: { id: student.ID, mobile, role: "student" } });
+    } catch (err) {
+        console.error("verifyOtp error:", err);
+        res.status(500).json({ success: false, message: "Server error" });
+    } finally {
+        if (connection) await connection.close();
+    }
+};
+
+// --- Logout User ---
 export const logoutUser = async (req, res) => {
     res.json({ success: true, message: "Logout successful" });
 };

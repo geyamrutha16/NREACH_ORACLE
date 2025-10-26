@@ -30,10 +30,11 @@ const SmsTable = ({ refresh }) => {
             console.log("🔄 Fetching SMS records...");
             const token = localStorage.getItem("token");
             const res = await axios.get(
-                "https://nreach-data.onrender.com/api/sms/results",
+                "http://localhost:5000/api/sms/results",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log(`✅ Fetched ${res.data.length} SMS records`);
+            console.log("Data:", res.data);
             setSmsRecords(res.data || []);
         } catch (err) {
             console.error("❌ Error fetching SMS results:", err);
@@ -48,26 +49,23 @@ const SmsTable = ({ refresh }) => {
 
     // Filtered records
     const filteredRecords = smsRecords.filter((sms) => {
-        const yearMatch = filterYear ? sms.year === filterYear : true;
+        const yearMatch = filterYear ? sms.year.toString() === filterYear : true;
         const sectionMatch = filterSection ? sms.section === filterSection : true;
         const rollMatch = filterRollNo
             ? sms.rollNo?.toLowerCase().includes(filterRollNo.toLowerCase())
             : true;
         const academicYearMatch = filterAcademicYear
-            ? sms.academicYear === filterAcademicYear
+            ? sms.academicYear?.toString() === filterAcademicYear
             : true;
         const departmentMatch =
             loginRole === "operator" && filterDepartment
                 ? sms.department === filterDepartment
                 : true;
         let attendanceMatch = true;
-        if (filterAttendance === "low") {
-            attendanceMatch = sms.attendance < 50;
-        } else if (filterAttendance === "medium") {
+        if (filterAttendance === "low") attendanceMatch = sms.attendance < 50;
+        else if (filterAttendance === "medium")
             attendanceMatch = sms.attendance >= 50 && sms.attendance <= 75;
-        } else if (filterAttendance === "high") {
-            attendanceMatch = sms.attendance > 75;
-        }
+        else if (filterAttendance === "high") attendanceMatch = sms.attendance > 75;
 
         return (
             yearMatch &&
@@ -443,7 +441,7 @@ const SmsTable = ({ refresh }) => {
                                 ) : (
                                     filteredRecords.map((sms, i) => (
                                         <tr
-                                            key={sms._id}
+                                            key={sms._id || i}
                                             style={{
                                                 background: i % 2 === 0 ? "#F9FAFB" : "#FFFFFF",
                                                 cursor: "pointer",

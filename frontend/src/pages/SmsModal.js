@@ -108,8 +108,11 @@ const SmsModal = ({ sms, onClose }) => {
                     >
                         {sms?.status === "sent" || sms?.status === "delivered" ? (
                             <>
-                                This is to acknowledge that your ward <strong>{sms?.name}</strong> with RollNo <strong>{sms?.rollNo}</strong> attendance report has been
-                                successfully sent to the mobile number <strong>{sms?.phoneNumber}</strong> on <strong>
+                                This is to acknowledge that your ward <strong>{sms?.name}</strong>
+                                (Roll No: <strong>{sms?.rollNo}</strong>) with attendance
+                                <strong>{sms?.attendance ?? "N/A"}%</strong> has been successfully sent
+                                to the mobile number <strong>{sms?.phoneNumber}</strong> on{" "}
+                                <strong>
                                     {sms?.createdAt ? new Date(sms.createdAt).toLocaleString() : "N/A"}
                                 </strong>.
                             </>
@@ -132,22 +135,20 @@ const SmsModal = ({ sms, onClose }) => {
                             <img
                                 src={HOD_SIGN}
                                 alt="HOD Signature"
-                                className="h-16 mx-auto"
                                 width="80px"
                                 height="100px"
                             />
-                            <p className="text-gray-700 font-medium">HOD</p>
+                            <p style={{ color: "#555", fontWeight: 500 }}>HOD</p>
                         </div>
 
                         <div className="text-center">
                             <img
                                 src={PRINCIPAL_SIGN}
                                 alt="Principal Signature"
-                                className="h-16 mx-auto"
                                 width="80px"
                                 height="100px"
                             />
-                            <p className="text-gray-700 font-medium">Principal</p>
+                            <p style={{ color: "#555", fontWeight: 500 }}>Principal</p>
                         </div>
                     </div>
                 </div>
