@@ -70,13 +70,6 @@ VALUES ('hod-civil', STANDARD_HASH('hod-civil','SHA256'), 'hod-civil');
 
 Inside the backend folder, create a file named .env and add your credentials:
 
-# Database Credentials
-DB_USER=testuser
-DB_PASSWORD=test123
-DB_HOST=localhost
-DB_PORT=1521
-DB_SERVICE=FREEPDB1
-
 📌 Notes
 
 Ensure Oracle Database service is running before starting the backend.
