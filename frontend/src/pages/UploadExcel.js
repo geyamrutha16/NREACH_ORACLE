@@ -63,7 +63,6 @@ const UploadExcel = ({ setRefresh, user }) => {
 
     const validateFields = () => {
         const missing = [];
-        if (!file) missing.push("Excel file");
         if (!fromDate) missing.push("From Date");
         if (!toDate) missing.push("To Date");
         if (!attendanceFilter) missing.push("Attendance Filter");
@@ -86,32 +85,54 @@ const UploadExcel = ({ setRefresh, user }) => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("year", year);
-        formData.append("section", section);
-        formData.append("fromDate", fromDate);
-        formData.append("toDate", toDate);
-        formData.append("attendanceFilter", attendanceFilter);
-        formData.append("academicYear", academicYear);
-        formData.append("department", user?.role === "hod" ? user.department : department);
-        formData.append("templateId", templateId);
-
         try {
             setLoading(true);
-            showNotification("Processing Excel and sending SMS...", "info");
+            showNotification("Processing request...", "info");
 
-            const response = await axios.post(
-                "http://localhost:5000/api/sms/send-bulk-sms",
-                formData,
-                { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 }
-            );
+            let response;
+
+            if (file) {
+                // ✅ Case 1: Excel Provided
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("year", year);
+                formData.append("section", section);
+                formData.append("fromDate", fromDate);
+                formData.append("toDate", toDate);
+                formData.append("attendanceFilter", attendanceFilter);
+                formData.append("academicYear", academicYear);
+                formData.append("department", user?.role === "hod" ? user.department : department);
+                formData.append("templateId", templateId);
+
+                response = await axios.post("http://localhost:5000/api/sms/send-bulk-sms", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                    timeout: 60000,
+                });
+            } else {
+                // ✅ Case 2: No Excel — Use existing STUDENTS table
+                const payload = {
+                    year,
+                    section,
+                    fromDate,
+                    toDate,
+                    attendanceFilter,
+                    academicYear,
+                    department: user?.role === "hod" ? user.department : department,
+                    templateId,
+                    uploadedBy: user?.username || "operator",
+                };
+
+                response = await axios.post("http://localhost:5000/api/sms/send-bulk-sms", payload, {
+                    headers: { "Content-Type": "application/json" },
+                    timeout: 60000,
+                });
+            }
 
             const data = response.data;
             if (data.success) {
-                showNotification(`✅ Upload Complete! Sent: ${data.sent}, Skipped: ${data.skipped}`, "success");
+                showNotification(`✅ SMS sent successfully! Sent: ${data.sent}, Skipped: ${data.skipped}`, "success");
             } else {
-                showNotification("⚠️ Upload completed with some issues.", "warning");
+                showNotification("⚠️ Some messages may not have been sent.", "warning");
             }
 
             setRefresh((prev) => !prev);

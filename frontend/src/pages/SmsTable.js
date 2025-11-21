@@ -35,7 +35,23 @@ const SmsTable = ({ refresh }) => {
             );
             console.log(`✅ Fetched ${res.data.length} SMS records`);
             console.log("Data:", res.data);
-            setSmsRecords(res.data || []);
+            // Map Oracle fields to frontend-friendly keys
+            const mapped = res.data.map(sms => ({
+                rollNo: sms.ROLL_NO || sms.rollNo || "N/A",
+                name: sms.NAME || sms.name || "N/A",
+                phoneNumber: sms.PHONE_NUMBER || sms.phoneNumber || "N/A",
+                year: sms.YEAR || sms.year || "N/A",
+                section: sms.SECTION || sms.section || "N/A",
+                attendance: sms.ATTENDANCE || sms.attendance || "N/A",
+                status: sms.STATUS || sms.status || "N/A",
+                sentAt: sms.SENT_AT || sms.sentAt || "N/A",
+                createdAt: sms.CREATED_AT || sms.createdAt || "N/A",
+                seen: sms.SEEN || sms.seen || false,
+            }));
+
+            console.log("✅ Mapped Data Sample:", mapped.slice(0, 3));
+
+            setSmsRecords(mapped);
         } catch (err) {
             console.error("❌ Error fetching SMS results:", err);
         } finally {
@@ -159,10 +175,10 @@ const SmsTable = ({ refresh }) => {
                             }}
                         >
                             <option value="">{isMobile ? "All Years" : "All"}</option>
-                            <option value="I">I</option>
-                            <option value="II">II</option>
-                            <option value="III">III</option>
-                            <option value="IV">IV</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
                         </select>
                         {!isMobile && <span style={{ fontWeight: 500 }}>Year</span>}
                     </label>

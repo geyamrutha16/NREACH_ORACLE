@@ -10,7 +10,7 @@ router.post("/send-bulk-sms", upload.single("file"), sendBulkSms);
 router.post("/templates/save-edited", saveEditedTemplate);
 router.get("/results", authMiddleware, getSmsResults);
 router.get("/templates", getStandardTemplates);
-router.get("/ack/:smsId", acknowledgeSms);
+router.put("/ack/:smsId", acknowledgeSms);
 router.get("/record/:smsId", getSmsById);
 
 export default router;

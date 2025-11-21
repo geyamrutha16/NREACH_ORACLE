@@ -35,7 +35,7 @@ const StudentDashboard = () => {
     const handleLogout = async () => {
         setLogoutLoading(true);
         try {
-            await axios.post("https://nreach-data.onrender.com/api/logout", {}, {
+            await axios.post("http://localhost:5000/api/logout", {}, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
         } catch (err) {

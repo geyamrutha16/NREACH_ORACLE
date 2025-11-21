@@ -80,8 +80,8 @@ const Ack = () => {
             try {
                 setLoading(true);
 
-                const ackRes = await axios.get(
-                    `https://nreach-data.onrender.com/api/sms/ack/${smsId}`
+                const ackRes = await axios.put(
+                    `http://localhost:5000/api/sms/ack/${smsId}`
                 );
                 setStatus(
                     ackRes.data.message.includes("Acknowledgment")
@@ -90,7 +90,7 @@ const Ack = () => {
                 );
 
                 const recordRes = await axios.get(
-                    `https://nreach-data.onrender.com/api/sms/record/${smsId}`
+                    `http://localhost:5000/api/sms/record/${smsId}`
                 );
 
                 if (recordRes.data.success) {

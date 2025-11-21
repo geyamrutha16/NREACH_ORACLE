@@ -7,10 +7,12 @@ import authRoutes from "./routes/authRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import { checkTwilioAccountStatus } from "./config/twillio.js";
+import { seedUsers } from "./controllers/authController.js";
 
 dotenv.config();
 await connectDB();
 checkTwilioAccountStatus();
+seedUsers();
 
 const app = express();
 app.use(cors());

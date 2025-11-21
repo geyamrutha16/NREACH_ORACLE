@@ -12,6 +12,37 @@ const dbConfig = {
     connectString: process.env.ORACLE_CONNECT_STRING || "localhost/XEPDB1",
 };
 
+export const seedUsers = async (req, res) => {
+    const users = [
+        { username: "operator", password: "operator123", role: "operator" },
+        { username: "hod-cse", password: "hod-cse123", role: "hod-cse" },
+        { username: "hod-ece", password: "hod-ece123", role: "hod-ece" },
+        { username: "hod-eee", password: "hod-eee123", role: "hod-eee" },
+        { username: "hod-civil", password: "hod-civil123", role: "hod-civil" },
+        { username: "hod-mech", password: "hod-mech123", role: "hod-mech" },
+
+    ];
+
+    let conn;
+    try {
+        conn = await oracledb.getConnection(dbConfig);
+
+        for (const u of users) {
+            const hash = crypto.createHash('sha256').update(u.password).digest('hex');
+            await conn.execute(
+                `INSERT INTO USERS (USERNAME, PASSWORD, ROLE) VALUES (:username, :password, :role)`,
+                [u.username, hash, u.role]
+            );
+        }
+        await conn.commit();
+        console.log("✅ Seeded USERS table successfully");
+    } catch (err) {
+        console.error("❌ Error seeding:", err);
+    } finally {
+        if (conn) await conn.close();
+    }
+}
+
 export const loginUser = async (req, res) => {
     let connection;
     try {
@@ -37,10 +68,8 @@ export const loginUser = async (req, res) => {
 
         const user = result.rows[0];
 
-        const isMatch = crypto.createHash('sha256').update(password).digest('hex');
-
-        // Compare the password hash
-        if (!isMatch) {
+        const hash = crypto.createHash('sha256').update(password).digest('hex');
+        if (hash !== user.PASSWORD) {
             return res.status(401).json({ success: false, message: "Invalid username or password" });
         }
 

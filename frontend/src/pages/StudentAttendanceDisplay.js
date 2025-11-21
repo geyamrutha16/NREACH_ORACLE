@@ -159,6 +159,9 @@ const StudentAttendanceDisplay = ({ refresh, phone }) => {
                             WebkitOverflowScrolling: "touch",
                             maxWidth: "100vw",
                             position: "relative",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                         }}
                     >
                         <div style={{ overflowX: isMobile ? "auto" : "hidden", width: "100%" }}>
