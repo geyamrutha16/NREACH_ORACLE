@@ -47,23 +47,14 @@ CREATE TABLE USERS (
 );
 
 👥 Insert Default Users
-INSERT INTO USERS (USERNAME, PASSWORD, ROLE)
-VALUES ('operator', STANDARD_HASH('operator','SHA256'), 'operator');
 
-INSERT INTO USERS (USERNAME, PASSWORD, ROLE)
-VALUES ('hod-cse', STANDARD_HASH('hod-cse','SHA256'), 'hod-cse');
+-> Add this to server.js
+import { seedUsers } from "./controllers/authController.js";
 
-INSERT INTO USERS (USERNAME, PASSWORD, ROLE)
-VALUES ('hod-ece', STANDARD_HASH('hod-ece','SHA256'), 'hod-ece');
-
-INSERT INTO USERS (USERNAME, PASSWORD, ROLE)
-VALUES ('hod-eee', STANDARD_HASH('hod-eee','SHA256'), 'hod-eee');
-
-INSERT INTO USERS (USERNAME, PASSWORD, ROLE)
-VALUES ('hod-mech', STANDARD_HASH('hod-mech','SHA256'), 'hod-mech');
-
-INSERT INTO USERS (USERNAME, PASSWORD, ROLE)
-VALUES ('hod-civil', STANDARD_HASH('hod-civil','SHA256'), 'hod-civil');
+dotenv.config();
+await connectDB();
+checkTwilioAccountStatus();
+seedUsers();
 
 ⚙️ Backend Configuration
 ✅ STEP 4: Create .env File
