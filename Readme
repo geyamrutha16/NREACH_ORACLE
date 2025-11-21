@@ -61,6 +61,13 @@ seedUsers();
 
 Inside the backend folder, create a file named .env and add your credentials:
 
+STEP 5: cd backend
+npm install
+node server.js
+
+STEP 6: cd frontend
+npm start
+
 📌 Notes
 
 Ensure Oracle Database service is running before starting the backend.
