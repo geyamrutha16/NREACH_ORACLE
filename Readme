@@ -66,6 +66,7 @@ npm install
 node server.js
 
 STEP 6: cd frontend
+npx react-scripts start
 npm start
 
 📌 Notes
