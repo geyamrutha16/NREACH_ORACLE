@@ -185,18 +185,7 @@ npm start
 ---
 
 ### 📂 Project Structure
-NREACH/
-├── backend/
-│   ├── controllers/
-│   ├── routes/
-│   ├── db/
-│   ├── server.js
-│   └── .env
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-└── README.md
+<img width="150" height="186" alt="image" src="https://github.com/user-attachments/assets/904003d5-e5db-41f1-8983-e7ebc47beb98" />
 
 ---
 
