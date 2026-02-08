@@ -99,6 +99,7 @@ Verify installation:
 ```bash
 node -v
 npm -v
+```
 
 ---
 
@@ -115,13 +116,13 @@ Login as a privileged user:
 ```bash
 CREATE USER testuser IDENTIFIED BY test123;
 GRANT CONNECT, RESOURCE TO testuser;
-
+```
 
 Connect to database:
 
 ```bash
 CONNECT testuser/test123@localhost:1521/FREEPDB1;
-
+```
 
 Create USERS table:
 
@@ -132,7 +133,7 @@ CREATE TABLE USERS (
   PASSWORD VARCHAR2(255) NOT NULL,
   ROLE VARCHAR2(50) NOT NULL
 );
-
+```
 ---
 
 ### 🔹 STEP 4: Seed Default Users
@@ -146,7 +147,7 @@ dotenv.config();
 await connectDB();
 checkTwilioAccountStatus();
 seedUsers();
-
+```
 ---
 
 ### 🔹 STEP 5: Environment Variables
@@ -165,7 +166,7 @@ BACKEND_URL=
 PORT=
 NODE_ENV=
 JWT_SECRET=
-
+```
 ---
 
 ### 🔹 STEP 6: Run the Application
@@ -174,13 +175,13 @@ Backend
 cd backend
 npm install
 node server.js
-
+```
 Frontend
 ```bash
 cd frontend
 npm install
 npm start
-
+```
 ---
 
 ### 📂 Project Structure
