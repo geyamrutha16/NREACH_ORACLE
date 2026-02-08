@@ -100,9 +100,13 @@ Verify installation:
 node -v
 npm -v
 
+---
+
 ### 🔹 STEP 2: Install Oracle Database
 
 Install Oracle Database 19c+ and ensure the service is running.
+
+---
 
 ### 🔹 STEP 3: Database Setup (SQL Plus)
 
@@ -129,6 +133,8 @@ CREATE TABLE USERS (
   ROLE VARCHAR2(50) NOT NULL
 );
 
+---
+
 ### 🔹 STEP 4: Seed Default Users
 
 Add in server.js:
@@ -140,6 +146,8 @@ dotenv.config();
 await connectDB();
 checkTwilioAccountStatus();
 seedUsers();
+
+---
 
 ### 🔹 STEP 5: Environment Variables
 
@@ -158,6 +166,8 @@ PORT=
 NODE_ENV=
 JWT_SECRET=
 
+---
+
 ### 🔹 STEP 6: Run the Application
 Backend
 ```bash
@@ -170,6 +180,8 @@ Frontend
 cd frontend
 npm install
 npm start
+
+---
 
 ### 📂 Project Structure
 NREACH/
@@ -185,6 +197,8 @@ NREACH/
 │   └── package.json
 └── README.md
 
+---
+
 ### 🔐 Security
 
 JWT-based authentication
@@ -192,11 +206,15 @@ Password hashing using bcrypt
 Role-based access control
 Protected API routes
 
+---
+
 ### 📌 Notes
 
 Ensure Oracle DB is running before backend startup
 Never commit .env files
 Use .gitignore for sensitive configs
+
+---
 
 ### ✅ Setup Complete
 
