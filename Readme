@@ -1,25 +1,82 @@
-📘 Project Setup Guide
+🎯 Overview
 
-This README provides step-by-step instructions to configure the environment, set up the Oracle database, and create required users and tables.
+NREACH is an automated attendance notification system that sends customized attendance updates directly to parents. All communication and actions are fully trackable and controlled by the admin.
 
-🛠 Prerequisites
+🏗️ Purpose
+Improve parent awareness of student attendance
+Reduce manual calls/messages by staff
+Enable real-time attendance communication
 
-Make sure the following are installed on your system:
+✨ Key Features
+📊 Attendance Tracking
+Daily, weekly, or monthly attendance monitoring
+Real-time attendance updates
+Multi-class support
 
-Node.js
+🔔 Automated Parent Notifications
+Attendance alerts sent via SMS / Email
+Customizable notification templates
+Scheduled and triggered notifications
 
-Oracle SQL
+⚙️ Admin Customization
+Configure attendance thresholds (low attendance alerts)
+Choose message formats and schedules
+Manage user roles and permissions
 
-SQL Plus
+📈 Full Traceability
+Complete logs of all sent messages
+Delivery status tracking
+Audit trail for all actions
+
+👥 Roles
+Operator
+HOD
+Parents/Students
+	
+🛠 Tech Stack
+Backend
+Runtime: Node.js v16+
+Framework: Express.js v4.x
+Database: Oracle Database 19c+
+ORM: oracledb package
+Authentication: JWT + bcrypt
+
+Frontend
+Framework: React.js
+UI Library: Bootstrap
+HTTP Client: Axios
+
+External Services
+SMS/Notifications: Twilio API
+Package Manager: npm/yarn
+Environment: dotenv
+
+📚 APIs
+
+1) Authentication
+2) SMS
+3) Student
+
+All protected routes require JWT token in header
+
+🚀 Installation Guide
+
+Prerequisites
+Node.js (v16 or higher)
+Oracle Database 19c+
+SQL*Plus
+Git
+
+Step-by-Step Setup
 
 🚀 Step-by-Step Setup
+
 ✅ STEP 1: Install Node.js
 
 Download and install Node.js from:
 https://nodejs.org
 
 Verify installation:
-
 node -v
 npm -v
 
@@ -72,11 +129,27 @@ npm start
 📌 Notes
 
 Ensure Oracle Database service is running before starting the backend.
-
 Do not expose your .env file in public repositories.
-
 Use .gitignore to exclude sensitive files.
 
 ✅ Setup Complete!
 
-Your environment is now ready. Start your backend server and connect it to the database successfully.
+.env
+ORACLE_USER=
+ORACLE_PASSWORD=
+ORACLE_CONNECT_STRING=
+
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_PHONE_NUMBER=
+
+FRONTEND_URL=
+
+BACKEND_URL=
+PORT=
+
+NODE_ENV=
+JWT_SECRET=
+
+📞 Support
+For support, email: geyamruthapoluru@gmail.com
